@@ -1,0 +1,19 @@
+# This file tells Git which files shouldn't be added to source control
+
+.idea
+.vscode
+.zed
+.env
+storage
+apify_storage
+crawlee_storage
+node_modules
+dist
+tsconfig.tsbuildinfo
+storage/*
+!storage/key_value_stores
+storage/key_value_stores/*
+!storage/key_value_stores/default
+storage/key_value_stores/default/*
+!storage/key_value_stores/default/INPUT.json
+pnpm-lock.yaml
