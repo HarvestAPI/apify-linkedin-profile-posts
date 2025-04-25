@@ -7,6 +7,8 @@ export function createHarvestApiScraper({ concurrency }: { concurrency: number }
   let processedPostsCounter = 0;
   let processedProfilesCounter = 0;
 
+  const scrapedPostsPerProfile: Record<string, Record<string, boolean>> = {};
+
   return {
     addJob: createConcurrentQueues(
       concurrency,
@@ -63,7 +65,10 @@ export function createHarvestApiScraper({ concurrency }: { concurrency: number }
         const endPage = startPage + (scrapePages || 1);
 
         for (let i = startPage; i < endPage; i++) {
-          if (processedPostsCounter >= MAX_SCRAPED_ITEMS) break;
+          if (processedPostsCounter >= MAX_SCRAPED_ITEMS) {
+            console.warn(`Max scraped items reached: ${MAX_SCRAPED_ITEMS}`);
+            break;
+          }
           let postsOnPageCounter = 0;
 
           const queryParams = new URLSearchParams({
@@ -86,12 +91,22 @@ export function createHarvestApiScraper({ concurrency }: { concurrency: number }
 
           if (response.elements && response.status < 400) {
             for (const post of response.elements) {
-              if (processedPostsCounter >= MAX_SCRAPED_ITEMS) break;
-              processedPostsCounter++;
-              postsCounter++;
-              postsOnPageCounter++;
-              console.info(`Scraped post id ${post.id} for ${JSON.stringify(profile)}`);
-              await Actor.pushData(post);
+              if (processedPostsCounter >= MAX_SCRAPED_ITEMS) {
+                console.warn(`Max scraped items reached: ${MAX_SCRAPED_ITEMS}`);
+                break;
+              }
+
+              if (post.id) {
+                scrapedPostsPerProfile[profileId] = scrapedPostsPerProfile[profileId] || {};
+                if (!scrapedPostsPerProfile[profileId][post.id]) {
+                  scrapedPostsPerProfile[profileId][post.id] = true;
+                  processedPostsCounter++;
+                  postsCounter++;
+                  postsOnPageCounter++;
+                  console.info(`Scraped post id ${post.id} for ${JSON.stringify(profile)}`);
+                  await Actor.pushData(post);
+                }
+              }
             }
           } else {
             console.error(
