@@ -2,6 +2,7 @@ import { Actor } from 'apify';
 import { createConcurrentQueues } from './queue.js';
 
 const MAX_SCRAPED_ITEMS = 1000;
+const USER_ID = Actor.getEnv().userId;
 
 export function createHarvestApiScraper({ concurrency }: { concurrency: number }) {
   let processedPostsCounter = 0;
@@ -38,7 +39,10 @@ export function createHarvestApiScraper({ concurrency }: { concurrency: number }
           const response = await fetch(
             `https://api.harvest-api.com/linkedin/profile-id?${queryParams.toString()}`,
             {
-              headers: { 'X-API-Key': process.env.HARVESTAPI_TOKEN! },
+              headers: {
+                'X-API-Key': process.env.HARVESTAPI_TOKEN!,
+                'x-apify-userid': USER_ID!,
+              },
             },
           )
             .then((response) => response.json())
@@ -80,7 +84,10 @@ export function createHarvestApiScraper({ concurrency }: { concurrency: number }
           const response = await fetch(
             `https://api.harvest-api.com/linkedin/post-search?${queryParams.toString()}`,
             {
-              headers: { 'X-API-Key': process.env.HARVESTAPI_TOKEN! },
+              headers: {
+                'X-API-Key': process.env.HARVESTAPI_TOKEN!,
+                'x-apify-userid': USER_ID!,
+              },
             },
           )
             .then((response) => response.json())
@@ -109,9 +116,14 @@ export function createHarvestApiScraper({ concurrency }: { concurrency: number }
               }
             }
           } else {
+            const error = typeof response.error === 'object' ? response.error : response;
+            if (typeof error === 'object') {
+              delete error.user;
+              delete error.credits;
+            }
             console.error(
               `Error scraping item#${index + 1} ${JSON.stringify(profile)}: ${JSON.stringify(
-                typeof response.error === 'object' ? response.error : response,
+                error,
                 null,
                 2,
               )}`,
