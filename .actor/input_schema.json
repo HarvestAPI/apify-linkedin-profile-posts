@@ -7,39 +7,39 @@
       "title": "Profile URLs",
       "type": "array",
       "editor": "stringList",
-      "description": "List of LinkedIn profile URLs to scrape. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs",
+      "description": "List of LinkedIn profile URLs to scrape. Example: `https://www.linkedin.com/in/williamhgates`. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs",
       "prefill": ["https://www.linkedin.com/in/williamhgates"]
     },
     "profilePublicIdentifiers": {
       "title": "Profile Public Identifiers (last part in the URL)",
       "type": "array",
       "editor": "stringList",
-      "description": "List of LinkedIn Public Identifiers. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs"
+      "description": "List of LinkedIn Public Identifiers. Example: `williamhgates`. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs"
     },
     "profileIds": {
       "title": "LinkedIn Profile IDs",
       "type": "array",
       "editor": "stringList",
-      "description": "List of LinkedIn profile IDs to scrape. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs"
+      "description": "List of LinkedIn profile IDs to scrape.  Example: `ACoAAA8BYqEBCGLg_vT_ca6mMEqkpp9nVffJ3hc`. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs"
     },
 
     "companyUrls": {
       "title": "Company URLs",
       "type": "array",
       "editor": "stringList",
-      "description": "List of LinkedIn company URLs to scrape. Example: https://www.linkedin.com/company/google Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs"
+      "description": "List of LinkedIn company URLs to scrape. Example: `https://www.linkedin.com/company/google`. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs"
     },
     "companyPublicIdentifiers": {
       "title": "Company Public Identifiers (last part in the URL)",
       "type": "array",
       "editor": "stringList",
-      "description": "List of LinkedIn Public Identifiers. Example: google. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs"
+      "description": "List of LinkedIn Public Identifiers. Example: `google`. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs"
     },
     "companyIds": {
       "title": "LinkedIn Company IDs",
       "type": "array",
       "editor": "stringList",
-      "description": "List of LinkedIn company IDs to scrape. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs"
+      "description": "List of LinkedIn company IDs to scrape. Example: `1441`. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs"
     },
 
     "maxPosts": {
