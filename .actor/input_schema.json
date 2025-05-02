@@ -14,7 +14,8 @@
       "title": "Profile Public Identifiers (last part in the URL)",
       "type": "array",
       "editor": "stringList",
-      "description": "List of LinkedIn Public Identifiers. Example: `williamhgates`. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs"
+      "description": "List of LinkedIn Public Identifiers. Example: `williamhgates`. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs",
+      "prefill": ["lewisowain"]
     },
     "profileIds": {
       "title": "LinkedIn Profile IDs",
@@ -27,13 +28,15 @@
       "title": "Company URLs",
       "type": "array",
       "editor": "stringList",
-      "description": "List of LinkedIn company URLs to scrape. Example: `https://www.linkedin.com/company/google`. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs"
+      "description": "List of LinkedIn company URLs to scrape. Example: `https://www.linkedin.com/company/google`. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs",
+      "prefill": ["https://www.linkedin.com/company/google"]
     },
     "companyPublicIdentifiers": {
       "title": "Company Public Identifiers (last part in the URL)",
       "type": "array",
       "editor": "stringList",
-      "description": "List of LinkedIn Public Identifiers. Example: `google`. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs"
+      "description": "List of LinkedIn Public Identifiers. Example: `google`. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs",
+      "prefill": ["microsoft"]
     },
     "companyIds": {
       "title": "LinkedIn Company IDs",
@@ -43,10 +46,10 @@
     },
 
     "maxPosts": {
-      "title": "Maximum number of posts to scrape (overrides pagination)",
+      "title": "Maximum number of posts to scrape per each input (overrides pagination)",
       "type": "integer",
-      "description": "Maximum number of posts to scrape from the profile. Default is 100. This overrides pagination. If you set this to 0, it will scrape all posts.",
-      "default": 100
+      "description": "Maximum number of posts to scrape per each profile or company. Default is 10. This overrides pagination. If you set this to 0, it will scrape all posts.",
+      "default": 10
     },
 
     "scrapePages": {
