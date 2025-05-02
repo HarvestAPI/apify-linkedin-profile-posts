@@ -15,8 +15,9 @@ await Actor.init();
 
 interface Input {
   postedLimit: '24h' | 'week' | 'month';
-  page: string;
-  scrapePages: string;
+  page?: string;
+  scrapePages?: string;
+  maxPosts: number | string;
   profileUrls?: string[];
   profilePublicIdentifiers?: string[];
   profileIds?: string[];
@@ -54,9 +55,10 @@ const promisesProfiles = profiles.map((profile, index) => {
     params: {
       postedLimit: input.postedLimit,
       sortBy: 'date',
-      page: input.page,
+      page: input.page || '1',
     },
     scrapePages: Number(input.scrapePages),
+    maxPosts: input.maxPosts === 0 || input.maxPosts === '0' ? 0 : Number(input.maxPosts) || null,
     index,
     total: profiles.length,
   });
@@ -69,8 +71,9 @@ const promisesCompanies = companies.map((company, index) => {
     params: {
       postedLimit: input.postedLimit,
       sortBy: 'date',
-      page: input.page,
+      page: input.page || '1',
     },
+    maxPosts: input.maxPosts === 0 || input.maxPosts === '0' ? 0 : Number(input.maxPosts) || null,
     scrapePages: Number(input.scrapePages),
     index,
     total: companies.length,

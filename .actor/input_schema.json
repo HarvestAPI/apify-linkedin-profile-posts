@@ -45,17 +45,22 @@
       "description": "List of LinkedIn profile IDs to scrape. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs"
     },
 
+    "maxPosts": {
+      "title": "Maximum number of posts to scrape (overrides pagination)",
+      "type": "integer",
+      "description": "Maximum number of posts to scrape from the profile. Default is 100. This overrides pagination. If you set this to 0, it will scrape all posts.",
+      "default": 100
+    },
+
     "scrapePages": {
       "title": "Number of pages to scrape",
       "type": "integer",
-      "description": "Number of pages to scrape from the profile. Default is 1. Page size is 20 posts.",
-      "default": 1
+      "description": "Number of pages to scrape from the profile. Default is 1. Page size is about 20 posts."
     },
     "page": {
       "title": "Page number to start scraping from",
       "type": "integer",
-      "description": "Page number to start scraping from. Default is 1. Page size is 20 posts.",
-      "default": 1
+      "description": "Page number to start scraping from. Default is 1. Page size is about 20 posts."
     }
   }
 }

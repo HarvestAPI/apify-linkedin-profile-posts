@@ -18,6 +18,7 @@ export function createHarvestApiScraper({ concurrency }: { concurrency: number }
         profile,
         params,
         scrapePages,
+        maxPosts,
         total,
       }: {
         profile: {
@@ -30,6 +31,7 @@ export function createHarvestApiScraper({ concurrency }: { concurrency: number }
         } | null;
         params: Record<string, string>;
         scrapePages: number;
+        maxPosts: number | null;
         index: number;
         total: number;
       }) => {
@@ -43,7 +45,7 @@ export function createHarvestApiScraper({ concurrency }: { concurrency: number }
         let postsCounter = 0;
 
         const startPage = Number(params.page) || 1;
-        const endPage = startPage + (scrapePages || 1);
+        const endPage = typeof maxPosts === 'number' ? 200 : startPage + (Number(scrapePages) || 1);
         const profileKey = JSON.stringify(profile);
 
         for (let i = startPage; i < endPage; i++) {
@@ -78,6 +80,9 @@ export function createHarvestApiScraper({ concurrency }: { concurrency: number }
             for (const post of response.elements) {
               if (processedPostsCounter >= MAX_SCRAPED_ITEMS) {
                 console.warn(`Max scraped items reached: ${MAX_SCRAPED_ITEMS}`);
+                break;
+              }
+              if (maxPosts && postsCounter >= maxPosts) {
                 break;
               }
 
