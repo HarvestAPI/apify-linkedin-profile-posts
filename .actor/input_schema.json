@@ -14,8 +14,7 @@
       "title": "Profile Public Identifiers (last part in the URL)",
       "type": "array",
       "editor": "stringList",
-      "description": "List of LinkedIn Public Identifiers. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs",
-      "prefill": ["towhid-rahman"]
+      "description": "List of LinkedIn Public Identifiers. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs"
     },
     "profileIds": {
       "title": "LinkedIn Profile IDs",
@@ -28,15 +27,13 @@
       "title": "Company URLs",
       "type": "array",
       "editor": "stringList",
-      "description": "List of LinkedIn company URLs to scrape. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs",
-      "prefill": ["https://www.linkedin.com/company/google"]
+      "description": "List of LinkedIn company URLs to scrape. Example: https://www.linkedin.com/company/google Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs"
     },
     "companyPublicIdentifiers": {
       "title": "Company Public Identifiers (last part in the URL)",
       "type": "array",
       "editor": "stringList",
-      "description": "List of LinkedIn Public Identifiers. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs",
-      "prefill": ["google"]
+      "description": "List of LinkedIn Public Identifiers. Example: google. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs"
     },
     "companyIds": {
       "title": "LinkedIn Company IDs",
