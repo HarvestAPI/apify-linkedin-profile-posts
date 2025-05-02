@@ -11,7 +11,7 @@
       "prefill": ["https://www.linkedin.com/in/williamhgates"]
     },
     "profilePublicIdentifiers": {
-      "title": "Public Identifiers (last part in the URL)",
+      "title": "Profile Public Identifiers (last part in the URL)",
       "type": "array",
       "editor": "stringList",
       "description": "List of LinkedIn Public Identifiers. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs",
@@ -32,7 +32,7 @@
       "prefill": ["https://www.linkedin.com/company/google"]
     },
     "companyPublicIdentifiers": {
-      "title": "Public Identifiers (last part in the URL)",
+      "title": "Company Public Identifiers (last part in the URL)",
       "type": "array",
       "editor": "stringList",
       "description": "List of LinkedIn Public Identifiers. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs",
