@@ -16,6 +16,7 @@ export function createHarvestApiScraper({ concurrency }: { concurrency: number }
       async ({
         index,
         profile,
+        company,
         params,
         scrapePages,
         maxPosts,
@@ -39,14 +40,19 @@ export function createHarvestApiScraper({ concurrency }: { concurrency: number }
           console.warn(`Max scraped items reached: ${MAX_SCRAPED_ITEMS}`);
           return;
         }
+        const entity = profile || company;
+        if (!entity) {
+          console.error(`No profile or company provided`);
+          return;
+        }
+        const entityKey = JSON.stringify(entity);
 
-        console.info(`Fetching posts for ${JSON.stringify(profile)}...`);
+        console.info(`Fetching posts for ${entityKey}...`);
         const timestamp = new Date();
         let postsCounter = 0;
 
         const startPage = Number(params.page) || 1;
         const endPage = typeof maxPosts === 'number' ? 200 : startPage + (Number(scrapePages) || 1);
-        const profileKey = JSON.stringify(profile);
 
         for (let i = startPage; i < endPage; i++) {
           if (processedPostsCounter >= MAX_SCRAPED_ITEMS) {
@@ -57,7 +63,7 @@ export function createHarvestApiScraper({ concurrency }: { concurrency: number }
 
           const queryParams = new URLSearchParams({
             ...params,
-            ...profile,
+            ...entity,
             page: String(i),
           });
 
@@ -87,13 +93,13 @@ export function createHarvestApiScraper({ concurrency }: { concurrency: number }
               }
 
               if (post.id) {
-                scrapedPostsPerProfile[profileKey] = scrapedPostsPerProfile[profileKey] || {};
-                if (!scrapedPostsPerProfile[profileKey][post.id]) {
-                  scrapedPostsPerProfile[profileKey][post.id] = true;
+                scrapedPostsPerProfile[entityKey] = scrapedPostsPerProfile[entityKey] || {};
+                if (!scrapedPostsPerProfile[entityKey][post.id]) {
+                  scrapedPostsPerProfile[entityKey][post.id] = true;
                   processedPostsCounter++;
                   postsCounter++;
                   postsOnPageCounter++;
-                  console.info(`Scraped post id ${post.id} for ${JSON.stringify(profile)}`);
+                  console.info(`Scraped post id ${post.id} for ${entityKey}`);
                   await Actor.pushData(post);
                 }
               }
@@ -105,11 +111,7 @@ export function createHarvestApiScraper({ concurrency }: { concurrency: number }
               delete error.credits;
             }
             console.error(
-              `Error scraping item#${index + 1} ${JSON.stringify(profile)}: ${JSON.stringify(
-                error,
-                null,
-                2,
-              )}`,
+              `Error scraping item#${index + 1} ${entityKey}: ${JSON.stringify(error, null, 2)}`,
             );
           }
 
@@ -122,7 +124,7 @@ export function createHarvestApiScraper({ concurrency }: { concurrency: number }
         processedProfilesCounter++;
 
         console.info(
-          `Scraped posts for ${JSON.stringify(profile)}. Posts found ${postsCounter} Elapsed: ${(
+          `Scraped posts for ${entityKey}. Posts found ${postsCounter} Elapsed: ${(
             elapsed / 1000
           ).toFixed(2)}s. Progress: ${processedProfilesCounter}/${total}`,
         );
