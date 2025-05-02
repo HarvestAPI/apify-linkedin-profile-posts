@@ -39,10 +39,10 @@
       "prefill": ["google"]
     },
     "companyIds": {
-      "title": "LinkedIn Profile IDs",
+      "title": "LinkedIn Company IDs",
       "type": "array",
       "editor": "stringList",
-      "description": "List of LinkedIn profile IDs to scrape. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs"
+      "description": "List of LinkedIn company IDs to scrape. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs"
     },
 
     "maxPosts": {
