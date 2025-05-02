@@ -20,7 +20,14 @@ export function createHarvestApiScraper({ concurrency }: { concurrency: number }
         scrapePages,
         total,
       }: {
-        profile: { url?: string; publicIdentifier?: string; profileId?: string };
+        profile: {
+          profilePublicIdentifier?: string;
+          profileId?: string;
+        } | null;
+        company: {
+          companyUniversalName?: string;
+          companyId?: string;
+        } | null;
         params: Record<string, string>;
         scrapePages: number;
         index: number;
@@ -31,42 +38,13 @@ export function createHarvestApiScraper({ concurrency }: { concurrency: number }
           return;
         }
 
-        let profileId = profile.profileId;
-        if (!profileId) {
-          console.info(`Fetching profileId for ${JSON.stringify(profile)}...`);
-          const queryParams = new URLSearchParams({ ...profile });
-
-          const response = await fetch(
-            `https://api.harvest-api.com/linkedin/profile-id?${queryParams.toString()}`,
-            {
-              headers: {
-                'X-API-Key': process.env.HARVESTAPI_TOKEN!,
-                'x-apify-userid': USER_ID!,
-              },
-            },
-          )
-            .then((response) => response.json())
-            .catch((error) => {
-              console.error(`Error fetching profile-id:`, error);
-              return { error };
-            });
-
-          profileId = response.element?.id;
-        }
-
-        if (!profileId) {
-          console.error(`No profileId found for ${JSON.stringify(profile)}`);
-          return;
-        } else {
-          console.info(`Found profileId ${profileId} for ${JSON.stringify(profile)}`);
-        }
-
         console.info(`Fetching posts for ${JSON.stringify(profile)}...`);
         const timestamp = new Date();
         let postsCounter = 0;
 
         const startPage = Number(params.page) || 1;
         const endPage = startPage + (scrapePages || 1);
+        const profileKey = JSON.stringify(profile);
 
         for (let i = startPage; i < endPage; i++) {
           if (processedPostsCounter >= MAX_SCRAPED_ITEMS) {
@@ -77,7 +55,7 @@ export function createHarvestApiScraper({ concurrency }: { concurrency: number }
 
           const queryParams = new URLSearchParams({
             ...params,
-            profileId,
+            ...profile,
             page: String(i),
           });
 
@@ -104,9 +82,9 @@ export function createHarvestApiScraper({ concurrency }: { concurrency: number }
               }
 
               if (post.id) {
-                scrapedPostsPerProfile[profileId] = scrapedPostsPerProfile[profileId] || {};
-                if (!scrapedPostsPerProfile[profileId][post.id]) {
-                  scrapedPostsPerProfile[profileId][post.id] = true;
+                scrapedPostsPerProfile[profileKey] = scrapedPostsPerProfile[profileKey] || {};
+                if (!scrapedPostsPerProfile[profileKey][post.id]) {
+                  scrapedPostsPerProfile[profileKey][post.id] = true;
                   processedPostsCounter++;
                   postsCounter++;
                   postsOnPageCounter++;

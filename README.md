@@ -1,28 +1,27 @@
 ## LinkedIn Profile Posts scraper
 
-Our powerful tool helps you gather posts from LinkedIn profiles without compromising security or violating platform policies.
+Our powerful tool helps you gather posts from LinkedIn profiles or companies without compromising security or violating platform policies.
 
 ### Key Benefits
 
 - No cookies or account required: Access profile data without sharing cookies or risking account restrictions
-- Low pricing: $2 per 1k posts. We don't use Apify proxy, to not charge you more.
-- Fast response times deliver data in seconds.
+- Low pricing: $2 per 1k posts.
+- Fast response times deliver data in seconds 🚀
 - No caching, fresh data.
-- Concurrency: this actor works scraping 3 profiles at a time.
+- Concurrency: each actor works scraping 3 profiles/companies at a time. It does mass scraping fast ⚡
 
 ## How It Works
 
 Simply provide one of the following:
 
-- List of LinkedIn profile URLs
+- List of LinkedIn profile/company URLs
 - List of LinkedIn public identifiers (e.g., `williamhgates` from `https://www.linkedin.com/in/williamhgates`)
-- List if LinkedIn profile IDs (e.g. ACoAAA8BYqEBCGLg_vT_ca6mMEqkpp9nVffJ3hc)
+- List if LinkedIn profile/company IDs (e.g. ACoAAA8BYqEBCGLg_vT_ca6mMEqkpp9nVffJ3hc)
 
 Optionally:
 
 - `scrapePages` - Number of pages to scrape. Each page is 20 posts. Posts sorted by date.
 - `page` - Page number to start scraping from. Default is 1.
-- `postedLimit` - Filter to fetch only posts for the last X time. Options: '24h', 'week', 'month'.
 
 ### Data You'll Receive
 
@@ -32,7 +31,7 @@ Optionally:
 - Media: images, videos, and links
 - Content of Re-posts
 
-Up to 1000 posts per actor run.
+Up to 1000 posts per one actor run.
 
 ### Sample output data
 

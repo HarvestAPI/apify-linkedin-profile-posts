@@ -20,24 +20,37 @@ interface Input {
   profileUrls?: string[];
   profilePublicIdentifiers?: string[];
   profileIds?: string[];
+  companyUrls?: string[];
+  companyPublicIdentifiers?: string[];
+  companyIds?: string[];
 }
 // Structure of input is defined in input_schema.json
 const input = await Actor.getInput<Input>();
 if (!input) throw new Error('Input is missing!');
 
 const profiles = [
-  ...(input.profileUrls || []).map((url) => ({ url })),
-  ...(input.profilePublicIdentifiers || []).map((publicIdentifier) => ({ publicIdentifier })),
+  ...(input.profileUrls || []).map((url) => ({ profilePublicIdentifier: url })),
+  ...(input.profilePublicIdentifiers || []).map((profilePublicIdentifier) => ({
+    profilePublicIdentifier,
+  })),
   ...(input.profileIds || []).map((profileId) => ({ profileId })),
+];
+const companies = [
+  ...(input.companyUrls || []).map((url) => ({ companyUniversalName: url })),
+  ...(input.companyPublicIdentifiers || []).map((companyUniversalName) => ({
+    companyUniversalName,
+  })),
+  ...(input.companyIds || []).map((companyId) => ({ companyId })),
 ];
 
 const scraper = createHarvestApiScraper({
   concurrency: 3,
 });
 
-const promises = profiles.map((profile, index) => {
+const promisesProfiles = profiles.map((profile, index) => {
   return scraper.addJob({
     profile,
+    company: null,
     params: {
       postedLimit: input.postedLimit,
       sortBy: 'date',
@@ -49,7 +62,22 @@ const promises = profiles.map((profile, index) => {
   });
 });
 
-await Promise.all(promises).catch((error) => {
+const promisesCompanies = companies.map((company, index) => {
+  return scraper.addJob({
+    company,
+    profile: null,
+    params: {
+      postedLimit: input.postedLimit,
+      sortBy: 'date',
+      page: input.page,
+    },
+    scrapePages: Number(input.scrapePages),
+    index,
+    total: companies.length,
+  });
+});
+
+await Promise.all([...promisesProfiles, ...promisesCompanies]).catch((error) => {
   console.error(`Error scraping profiles:`, error);
 });
 

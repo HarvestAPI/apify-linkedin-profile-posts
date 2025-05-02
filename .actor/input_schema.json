@@ -23,6 +23,28 @@
       "editor": "stringList",
       "description": "List of LinkedIn profile IDs to scrape. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs"
     },
+
+    "companyUrls": {
+      "title": "Company URLs",
+      "type": "array",
+      "editor": "stringList",
+      "description": "List of LinkedIn company URLs to scrape. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs",
+      "prefill": ["https://www.linkedin.com/company/google"]
+    },
+    "companyPublicIdentifiers": {
+      "title": "Public Identifiers (last part in the URL)",
+      "type": "array",
+      "editor": "stringList",
+      "description": "List of LinkedIn Public Identifiers. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs",
+      "prefill": ["google"]
+    },
+    "companyIds": {
+      "title": "LinkedIn Profile IDs",
+      "type": "array",
+      "editor": "stringList",
+      "description": "List of LinkedIn profile IDs to scrape. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs"
+    },
+
     "scrapePages": {
       "title": "Number of pages to scrape",
       "type": "integer",
@@ -34,13 +56,6 @@
       "type": "integer",
       "description": "Page number to start scraping from. Default is 1. Page size is 20 posts.",
       "default": 1
-    },
-    "postedLimit": {
-      "title": "Posted Limit (filter) '24h', 'week', 'month'.",
-      "type": "string",
-      "description": "Fetch only posts for the last X time. Options: '24h', 'week', 'month'.",
-      "editor": "select",
-      "enum": ["no", "24h", "week", "month"]
     }
   }
 }
