@@ -65,7 +65,7 @@ const queryRest: {
 });
 
 const scraper = createHarvestApiScraper({
-  concurrency: 3,
+  concurrency: 5,
 });
 
 const commonArgs = {
