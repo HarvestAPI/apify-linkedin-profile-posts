@@ -49,7 +49,7 @@
       "title": "Maximum number of posts to scrape per each input (overrides pagination)",
       "type": "integer",
       "description": "Maximum number of posts to scrape per each profile or company. Default is 10. This overrides pagination. If you set this to 0, it will scrape all posts.",
-      "default": 10
+      "prefill": 10
     },
 
     "scrapePages": {
