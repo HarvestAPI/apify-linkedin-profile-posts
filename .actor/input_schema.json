@@ -7,14 +7,14 @@
       "title": "Profile URLs",
       "type": "array",
       "editor": "stringList",
-      "description": "List of LinkedIn profile URLs to scrape. Example: `https://www.linkedin.com/in/williamhgates`. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs",
+      "description": "List of LinkedIn profile URLs to scrape. Example: `https://www.linkedin.com/in/williamhgates` will fetch posted or re-posted content by Bill Gates. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs",
       "prefill": ["https://www.linkedin.com/in/williamhgates"]
     },
     "profilePublicIdentifiers": {
       "title": "Profile Public Identifiers (last part in the URL)",
       "type": "array",
       "editor": "stringList",
-      "description": "List of LinkedIn Public Identifiers. Example: `williamhgates`. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs",
+      "description": "List of LinkedIn Public Identifiers. Example: `williamhgates` will fetch posted or re-posted content by Bill Gates. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs",
       "prefill": ["lewisowain"]
     },
     "profileIds": {
@@ -49,19 +49,19 @@
       "title": "Author's Company URLs",
       "type": "array",
       "editor": "stringList",
-      "description": "Scrape posts of profile-authors who assigned to LinkedIn URL of these companies. Example: `https://www.linkedin.com/company/google` will fetch posts of Google employees or some ex-employees in some cases."
+      "description": "Scrape posts of profile-authors who assigned to LinkedIn URL of these companies. Example: `https://www.linkedin.com/company/google` will fetch posts of Google employees or ex-employees in some cases."
     },
     "authorsCompanyPublicIdentifiers": {
       "title": "Author's Company Public Identifiers (last part in the URL)",
       "type": "array",
       "editor": "stringList",
-      "description": "Scrape posts of profile-authors who assigned to LinkedIn Public Identifiers of these companies. Example: `google` will fetch posts of Google employees or some ex-employees in some cases."
+      "description": "Scrape posts of profile-authors who assigned to LinkedIn Public Identifiers of these companies. Example: `google` will fetch posts of Google employees or ex-employees in some cases."
     },
     "authorsCompanyIds": {
       "title": "Author's LinkedIn Company IDs",
       "type": "array",
       "editor": "stringList",
-      "description": "Scrape posts of profile-authors who assigned to LinkedIn Company IDs of these companies. Example: `1441` will fetch posts of Google employees or some ex-employees in some cases."
+      "description": "Scrape posts of profile-authors who assigned to LinkedIn Company IDs of these companies. Example: `1441` will fetch posts of Google employees or ex-employees in some cases."
     },
 
     "maxPosts": {
