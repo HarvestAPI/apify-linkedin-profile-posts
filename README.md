@@ -25,7 +25,7 @@ Other params (optionally):
 - `scrapePages` - Number of pages to scrape, if `maxPosts` is not set. Each page is 20 posts. Posts sorted by date.
 - `page` - Page number to start scraping from. Default is 1.
 
-**If you want to provide text search queries, you can use our Search scraper [Linkedin Post Search Scraper](https://apify.com/harvestapi/linkedin-post-search).**
+**If you want to search post by text queries, you can use our Post Search scraper [Linkedin Post Search Scraper](https://apify.com/harvestapi/linkedin-post-search).**
 
 ### Data You'll Receive
 
