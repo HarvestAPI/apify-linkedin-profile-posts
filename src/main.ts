@@ -24,6 +24,9 @@ interface Input {
   companyUrls?: string[];
   companyPublicIdentifiers?: string[];
   companyIds?: string[];
+  authorsCompanyUrls?: string[];
+  authorsCompanyUniversalName?: string[];
+  authorsCompanyId?: string[];
 }
 // Structure of input is defined in input_schema.json
 const input = await Actor.getInput<Input>();
@@ -44,41 +47,77 @@ const companies = [
   ...(input.companyIds || []).map((companyId) => ({ companyId })),
 ];
 
+const queryRest: {
+  authorsCompanyUniversalName: string[];
+  authorsCompanyId: string[];
+} = {
+  authorsCompanyUniversalName: [],
+  authorsCompanyId: [],
+};
+(input.authorsCompanyUniversalName || []).forEach((companyUniversalName) => {
+  queryRest.authorsCompanyUniversalName.push(companyUniversalName);
+});
+(input.authorsCompanyId || []).forEach((companyId) => {
+  queryRest.authorsCompanyId.push(companyId);
+});
+(input.authorsCompanyUrls || []).forEach((url) => {
+  queryRest.authorsCompanyUniversalName.push(url);
+});
+
 const scraper = createHarvestApiScraper({
   concurrency: 3,
 });
 
-const promisesProfiles = profiles.map((profile, index) => {
+const commonArgs = {
+  scrapePages: Number(input.scrapePages),
+  maxPosts: input.maxPosts === 0 || input.maxPosts === '0' ? 0 : Number(input.maxPosts) || null,
+  total:
+    profiles.length +
+    companies.length +
+    (queryRest.authorsCompanyId?.length || queryRest.authorsCompanyUniversalName?.length ? 1 : 0),
+};
+
+const promisesProfiles = profiles.map((profile) => {
   return scraper.addJob({
-    profile,
-    company: null,
+    entity: profile,
     params: {
       postedLimit: input.postedLimit,
       sortBy: 'date',
       page: input.page || '1',
+      ...queryRest,
     },
-    scrapePages: Number(input.scrapePages),
-    maxPosts: input.maxPosts === 0 || input.maxPosts === '0' ? 0 : Number(input.maxPosts) || null,
-    index,
-    total: profiles.length,
+    ...commonArgs,
   });
 });
 
-const promisesCompanies = companies.map((company, index) => {
+const promisesCompanies = companies.map((company) => {
   return scraper.addJob({
-    company,
-    profile: null,
+    entity: company,
     params: {
       postedLimit: input.postedLimit,
       sortBy: 'date',
       page: input.page || '1',
     },
-    maxPosts: input.maxPosts === 0 || input.maxPosts === '0' ? 0 : Number(input.maxPosts) || null,
-    scrapePages: Number(input.scrapePages),
-    index,
-    total: companies.length,
+    ...commonArgs,
   });
 });
+
+if (queryRest.authorsCompanyId?.length || queryRest.authorsCompanyUniversalName?.length) {
+  promisesCompanies.push(
+    scraper.addJob({
+      entity: {
+        authorsCompanyId: queryRest.authorsCompanyId.join(',') || undefined,
+        authorsCompanyUniversalName: queryRest.authorsCompanyUniversalName.join(',') || undefined,
+      },
+      params: {
+        postedLimit: input.postedLimit,
+        sortBy: 'date',
+        page: input.page || '1',
+      },
+      ...commonArgs,
+    }),
+  );
+}
 
 await Promise.all([...promisesProfiles, ...promisesCompanies]).catch((error) => {
   console.error(`Error scraping profiles:`, error);

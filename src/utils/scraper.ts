@@ -14,33 +14,29 @@ export function createHarvestApiScraper({ concurrency }: { concurrency: number }
     addJob: createConcurrentQueues(
       concurrency,
       async ({
-        index,
-        profile,
-        company,
+        entity,
         params,
         scrapePages,
         maxPosts,
         total,
       }: {
-        profile: {
+        entity: {
           profilePublicIdentifier?: string;
           profileId?: string;
-        } | null;
-        company: {
           companyUniversalName?: string;
           companyId?: string;
+          authorsCompanyId?: string;
+          authorsCompanyUniversalName?: string;
         } | null;
-        params: Record<string, string>;
+        params: Record<string, string | string[]>;
         scrapePages: number;
         maxPosts: number | null;
-        index: number;
         total: number;
       }) => {
         if (processedPostsCounter >= MAX_SCRAPED_ITEMS) {
           console.warn(`Max scraped items reached: ${MAX_SCRAPED_ITEMS}`);
           return;
         }
-        const entity = profile || company;
         if (!entity) {
           console.error(`No profile or company provided`);
           return;
@@ -68,7 +64,7 @@ export function createHarvestApiScraper({ concurrency }: { concurrency: number }
           });
 
           const response = await fetch(
-            `https://api.harvest-api.com/linkedin/post-search?${queryParams.toString()}`,
+            `${process.env.HARVESTAPI_URL || 'https://api.harvest-api.com'}/linkedin/post-search?${queryParams.toString()}`,
             {
               headers: {
                 'X-API-Key': process.env.HARVESTAPI_TOKEN!,
@@ -111,7 +107,7 @@ export function createHarvestApiScraper({ concurrency }: { concurrency: number }
               delete error.credits;
             }
             console.error(
-              `Error scraping item#${index + 1} ${entityKey}: ${JSON.stringify(error, null, 2)}`,
+              `Error scraping item#${processedPostsCounter + 1} ${entityKey}: ${JSON.stringify(error, null, 2)}`,
             );
           }
 

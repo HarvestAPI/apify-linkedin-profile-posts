@@ -14,13 +14,15 @@ Our powerful tool helps you gather posts from LinkedIn profiles or companies wit
 
 Simply provide one of the following:
 
-- List of LinkedIn profile/company URLs
-- List of LinkedIn public identifiers (e.g., `williamhgates` from `https://www.linkedin.com/in/williamhgates`)
-- List if LinkedIn profile/company IDs (e.g. ACoAAA8BYqEBCGLg_vT_ca6mMEqkpp9nVffJ3hc)
+- List of LinkedIn profile/company URLswho posted the content
+- List of LinkedIn Public Identifiers who posted the content (e.g., `williamhgates` from `https://www.linkedin.com/in/williamhgates`)
+- List if LinkedIn profile/company IDs who posted the content (e.g. ACoAAA8BYqEBCGLg_vT_ca6mMEqkpp9nVffJ3hc)
+- (optionally) List of LinkedIn companies where authors work (e.g., `Microsoft`, `Google`).
 
-Optionally:
+Other params (optionally):
 
-- `scrapePages` - Number of pages to scrape. Each page is 20 posts. Posts sorted by date.
+- `maxPosts` - Maximum number of posts to scrape per each search query. This overrides `scrapePages` pagination. If you set this to 0, it will scrape all posts.
+- `scrapePages` - Number of pages to scrape, if `maxPosts` is not set. Each page is 20 posts. Posts sorted by date.
 - `page` - Page number to start scraping from. Default is 1.
 
 ### Data You'll Receive
