@@ -1,7 +1,6 @@
 import { Actor } from 'apify';
 import { createConcurrentQueues } from './queue.js';
 
-const MAX_SCRAPED_ITEMS = 1000;
 const USER_ID = Actor.getEnv().userId;
 
 export function createHarvestApiScraper({ concurrency }: { concurrency: number }) {
@@ -33,10 +32,6 @@ export function createHarvestApiScraper({ concurrency }: { concurrency: number }
         maxPosts: number | null;
         total: number;
       }) => {
-        if (processedPostsCounter >= MAX_SCRAPED_ITEMS) {
-          console.warn(`Max scraped items reached: ${MAX_SCRAPED_ITEMS}`);
-          return;
-        }
         if (!entity) {
           console.error(`No profile or company provided`);
           return;
@@ -51,10 +46,6 @@ export function createHarvestApiScraper({ concurrency }: { concurrency: number }
         const endPage = typeof maxPosts === 'number' ? 200 : startPage + (Number(scrapePages) || 1);
 
         for (let i = startPage; i < endPage; i++) {
-          if (processedPostsCounter >= MAX_SCRAPED_ITEMS) {
-            console.warn(`Max scraped items reached: ${MAX_SCRAPED_ITEMS}`);
-            break;
-          }
           let postsOnPageCounter = 0;
 
           const queryParams = new URLSearchParams({
@@ -80,10 +71,6 @@ export function createHarvestApiScraper({ concurrency }: { concurrency: number }
 
           if (response.elements && response.status < 400) {
             for (const post of response.elements) {
-              if (processedPostsCounter >= MAX_SCRAPED_ITEMS) {
-                console.warn(`Max scraped items reached: ${MAX_SCRAPED_ITEMS}`);
-                break;
-              }
               if (maxPosts && postsCounter >= maxPosts) {
                 break;
               }

@@ -35,8 +35,6 @@ Other params (optionally):
 - Media: images, videos, and links
 - Content of Re-posts
 
-Up to 1000 posts per one actor run.
-
 ### Sample output data
 
 Here is the example post output of this actor:
