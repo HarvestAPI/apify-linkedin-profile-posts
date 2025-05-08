@@ -1,12 +1,12 @@
 {
   "actorSpecification": 1,
-  "name": "my-actor",
-  "title": "Scrape single page in TypeScript",
-  "description": "Scrape data from single page with provided URL.",
+  "name": "linkedin-profile-posts",
+  "title": "LinkedIn Profile Posts Bulk Scraper",
+  "description": "Extract posts from LinkedIn profiles including content, media, engagement and more. No cookies or account required. Concurrency + fast response times make mass scraping fast ⚡",
   "version": "0.0",
-  "meta": {
-    "templateId": "ts-start"
-  },
+  "minMemoryMbytes": 128,
+  "maxMemoryMbytes": 256,
+  "usesStandbyMode": false,
   "input": "./input_schema.json",
   "dockerfile": "./Dockerfile"
 }

@@ -1,7 +1,8 @@
 import { Actor } from 'apify';
 import { createConcurrentQueues } from './queue.js';
 
-const USER_ID = Actor.getEnv().userId;
+const { actorId, actorRunId, actorBuildId, userId, actorMaxPaidDatasetItems, memoryMbytes } =
+  Actor.getEnv();
 
 export function createHarvestApiScraper({ concurrency }: { concurrency: number }) {
   let processedPostsCounter = 0;
@@ -32,6 +33,10 @@ export function createHarvestApiScraper({ concurrency }: { concurrency: number }
         maxPosts: number | null;
         total: number;
       }) => {
+        if (actorMaxPaidDatasetItems && processedPostsCounter >= actorMaxPaidDatasetItems) {
+          console.warn(`Max scraped items reached: ${actorMaxPaidDatasetItems}`);
+          return;
+        }
         if (!entity) {
           console.error(`No profile or company provided`);
           return;
@@ -46,6 +51,10 @@ export function createHarvestApiScraper({ concurrency }: { concurrency: number }
         const endPage = typeof maxPosts === 'number' ? 200 : startPage + (Number(scrapePages) || 1);
 
         for (let i = startPage; i < endPage; i++) {
+          if (actorMaxPaidDatasetItems && processedPostsCounter >= actorMaxPaidDatasetItems) {
+            console.warn(`Max scraped items reached: ${actorMaxPaidDatasetItems}`);
+            return;
+          }
           let postsOnPageCounter = 0;
 
           const queryParams = new URLSearchParams({
@@ -59,7 +68,12 @@ export function createHarvestApiScraper({ concurrency }: { concurrency: number }
             {
               headers: {
                 'X-API-Key': process.env.HARVESTAPI_TOKEN!,
-                'x-apify-userid': USER_ID!,
+                'x-apify-userid': userId!,
+                'x-apify-actor-id': actorId!,
+                'x-apify-actor-run-id': actorRunId!,
+                'x-apify-actor-build-id': actorBuildId!,
+                'x-apify-memory-mbytes': String(memoryMbytes),
+                'x-apify-actor-max-paid-dataset-items': String(actorMaxPaidDatasetItems) || '0',
               },
             },
           )
@@ -71,6 +85,10 @@ export function createHarvestApiScraper({ concurrency }: { concurrency: number }
 
           if (response.elements && response.status < 400) {
             for (const post of response.elements) {
+              if (actorMaxPaidDatasetItems && processedPostsCounter >= actorMaxPaidDatasetItems) {
+                console.warn(`Max scraped items reached: ${actorMaxPaidDatasetItems}`);
+                return;
+              }
               if (maxPosts && postsCounter >= maxPosts) {
                 break;
               }
