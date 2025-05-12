@@ -8,7 +8,10 @@
       "type": "array",
       "editor": "stringList",
       "description": "List of LinkedIn profile or company URLs to scrape. Example: `https://www.linkedin.com/in/williamhgates` will fetch posted or re-posted content by Bill Gates.",
-      "prefill": ["https://www.linkedin.com/in/williamhgates"]
+      "prefill": [
+        "https://www.linkedin.com/in/williamhgates",
+        "https://www.linkedin.com/company/google"
+      ]
     },
     "authorsCompanies": {
       "title": "Author's Company URLs",
@@ -20,7 +23,7 @@
       "title": "Maximum number of posts to scrape per each input (overrides pagination)",
       "type": "integer",
       "description": "Maximum number of posts to scrape per each profile or company. Default is 10. This overrides pagination. If you set this to 0, it will scrape all posts.",
-      "prefill": 10
+      "prefill": 5
     },
 
     "scrapePages": {
@@ -39,15 +42,13 @@
       "title": "Profile URLs",
       "type": "array",
       "editor": "stringList",
-      "description": "List of LinkedIn profile URLs to scrape. Example: `https://www.linkedin.com/in/williamhgates` will fetch posted or re-posted content by Bill Gates. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs",
-      "prefill": ["https://www.linkedin.com/in/williamhgates"]
+      "description": "List of LinkedIn profile URLs to scrape. Example: `https://www.linkedin.com/in/williamhgates` will fetch posted or re-posted content by Bill Gates. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs"
     },
     "profilePublicIdentifiers": {
       "title": "Profile Public Identifiers (last part in the URL)",
       "type": "array",
       "editor": "stringList",
-      "description": "List of LinkedIn Public Identifiers. Example: `williamhgates` will fetch posted or re-posted content by Bill Gates. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs",
-      "prefill": ["lewisowain"]
+      "description": "List of LinkedIn Public Identifiers. Example: `williamhgates` will fetch posted or re-posted content by Bill Gates. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs"
     },
     "profileIds": {
       "title": "LinkedIn Profile IDs",
@@ -59,15 +60,13 @@
       "title": "Company URLs",
       "type": "array",
       "editor": "stringList",
-      "description": "List of LinkedIn company URLs to scrape. Example: `https://www.linkedin.com/company/google`. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs",
-      "prefill": ["https://www.linkedin.com/company/google"]
+      "description": "List of LinkedIn company URLs to scrape. Example: `https://www.linkedin.com/company/google`. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs"
     },
     "companyPublicIdentifiers": {
       "title": "Company Public Identifiers (last part in the URL)",
       "type": "array",
       "editor": "stringList",
-      "description": "List of LinkedIn Public Identifiers. Example: `google`. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs",
-      "prefill": ["microsoft"]
+      "description": "List of LinkedIn Public Identifiers. Example: `google`. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs"
     },
     "companyIds": {
       "title": "LinkedIn Company IDs",
