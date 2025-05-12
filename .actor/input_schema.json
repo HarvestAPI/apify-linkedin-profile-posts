@@ -3,6 +3,38 @@
   "type": "object",
   "schemaVersion": 1,
   "properties": {
+    "targetUrls": {
+      "title": "Target URLs",
+      "type": "array",
+      "editor": "stringList",
+      "description": "List of LinkedIn profile or company URLs to scrape. Example: `https://www.linkedin.com/in/williamhgates` will fetch posted or re-posted content by Bill Gates.",
+      "prefill": ["https://www.linkedin.com/in/williamhgates"]
+    },
+    "authorsCompanies": {
+      "title": "Author's Company URLs",
+      "type": "array",
+      "editor": "stringList",
+      "description": "Scrape posts of profile-authors who assigned to LinkedIn URL of these companies. Example: `https://www.linkedin.com/company/google` will fetch posts of Google employees or ex-employees in some cases."
+    },
+    "maxPosts": {
+      "title": "Maximum number of posts to scrape per each input (overrides pagination)",
+      "type": "integer",
+      "description": "Maximum number of posts to scrape per each profile or company. Default is 10. This overrides pagination. If you set this to 0, it will scrape all posts.",
+      "prefill": 10
+    },
+
+    "scrapePages": {
+      "sectionCaption": "Advanced",
+      "title": "Number of pages to scrape",
+      "type": "integer",
+      "description": "Number of pages to scrape from the profile. Default is 1. Page size is about 20 posts."
+    },
+    "page": {
+      "title": "Page number to start scraping from",
+      "type": "integer",
+      "description": "Page number to start scraping from. Default is 1. Page size is about 20 posts."
+    },
+
     "profileUrls": {
       "title": "Profile URLs",
       "type": "array",
@@ -23,7 +55,6 @@
       "editor": "stringList",
       "description": "List of LinkedIn profile IDs to scrape.  Example: `ACoAAA8BYqEBCGLg_vT_ca6mMEqkpp9nVffJ3hc`. Provide at least one of the 3 fields: URLs or Public Identifiers or Profile IDs"
     },
-
     "companyUrls": {
       "title": "Company URLs",
       "type": "array",
@@ -62,24 +93,6 @@
       "type": "array",
       "editor": "stringList",
       "description": "Scrape posts of profile-authors who assigned to LinkedIn Company IDs of these companies. Example: `1441` will fetch posts of Google employees or ex-employees in some cases."
-    },
-
-    "maxPosts": {
-      "title": "Maximum number of posts to scrape per each input (overrides pagination)",
-      "type": "integer",
-      "description": "Maximum number of posts to scrape per each profile or company. Default is 10. This overrides pagination. If you set this to 0, it will scrape all posts.",
-      "prefill": 10
-    },
-
-    "scrapePages": {
-      "title": "Number of pages to scrape",
-      "type": "integer",
-      "description": "Number of pages to scrape from the profile. Default is 1. Page size is about 20 posts."
-    },
-    "page": {
-      "title": "Page number to start scraping from",
-      "type": "integer",
-      "description": "Page number to start scraping from. Default is 1. Page size is about 20 posts."
     }
   }
 }

@@ -27,6 +27,8 @@ export function createHarvestApiScraper({ concurrency }: { concurrency: number }
           companyId?: string;
           authorsCompanyId?: string;
           authorsCompanyUniversalName?: string;
+          authorsCompany?: string;
+          targetUrl?: string;
         } | null;
         params: Record<string, string | string[]>;
         scrapePages: number;

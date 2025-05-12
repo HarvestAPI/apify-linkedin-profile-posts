@@ -18,15 +18,17 @@ interface Input {
   page?: string;
   scrapePages?: string;
   maxPosts: number | string;
+  targetUrls?: string[];
   profileUrls?: string[];
   profilePublicIdentifiers?: string[];
   profileIds?: string[];
   companyUrls?: string[];
   companyPublicIdentifiers?: string[];
   companyIds?: string[];
+  authorsCompanies?: string[];
   authorsCompanyUrls?: string[];
-  authorsCompanyUniversalName?: string[];
-  authorsCompanyId?: string[];
+  authorsCompanyPublicIdentifiers?: string[];
+  authorsCompanyIds?: string[];
 }
 // Structure of input is defined in input_schema.json
 const input = await Actor.getInput<Input>();
@@ -46,80 +48,43 @@ const companies = [
   })),
   ...(input.companyIds || []).map((companyId) => ({ companyId })),
 ];
-
-const queryRest: {
-  authorsCompanyUniversalName: string[];
-  authorsCompanyId: string[];
-} = {
-  authorsCompanyUniversalName: [],
-  authorsCompanyId: [],
-};
-(input.authorsCompanyUniversalName || []).forEach((companyUniversalName) => {
-  queryRest.authorsCompanyUniversalName.push(companyUniversalName);
-});
-(input.authorsCompanyId || []).forEach((companyId) => {
-  queryRest.authorsCompanyId.push(companyId);
-});
-(input.authorsCompanyUrls || []).forEach((url) => {
-  queryRest.authorsCompanyUniversalName.push(url);
-});
+const authorsCompanies = [
+  ...(input.authorsCompanyPublicIdentifiers || []).map((url) => ({
+    authorsCompanyUniversalName: url,
+  })),
+  ...(input.authorsCompanyIds || []).map((authorsCompanyId) => ({
+    authorsCompanyId,
+  })),
+  ...(input.authorsCompanyUrls || []).map((url) => ({ authorsCompanyUniversalName: url })),
+  ...(input.authorsCompanies || []).map((authorsCompany) => ({ authorsCompany })),
+];
+const targets = [...(input.targetUrls || []).map((url) => ({ targetUrl: url }))];
 
 const scraper = createHarvestApiScraper({
-  concurrency: 5,
+  concurrency: 6,
 });
 
 const commonArgs = {
   scrapePages: Number(input.scrapePages),
   maxPosts: input.maxPosts === 0 || input.maxPosts === '0' ? 0 : Number(input.maxPosts) || null,
-  total:
-    profiles.length +
-    companies.length +
-    (queryRest.authorsCompanyId?.length || queryRest.authorsCompanyUniversalName?.length ? 1 : 0),
+  total: profiles.length + companies.length + authorsCompanies.length + targets.length,
 };
 
-const promisesProfiles = profiles.map((profile) => {
-  return scraper.addJob({
-    entity: profile,
-    params: {
-      postedLimit: input.postedLimit,
-      sortBy: 'date',
-      page: input.page || '1',
-      ...queryRest,
-    },
-    ...commonArgs,
-  });
-});
-
-const promisesCompanies = companies.map((company) => {
-  return scraper.addJob({
-    entity: company,
-    params: {
-      postedLimit: input.postedLimit,
-      sortBy: 'date',
-      page: input.page || '1',
-    },
-    ...commonArgs,
-  });
-});
-
-if (queryRest.authorsCompanyId?.length || queryRest.authorsCompanyUniversalName?.length) {
-  promisesCompanies.push(
-    scraper.addJob({
-      entity: {
-        authorsCompanyId: queryRest.authorsCompanyId.join(',') || undefined,
-        authorsCompanyUniversalName: queryRest.authorsCompanyUniversalName.join(',') || undefined,
-      },
+const promises = [
+  ...[...profiles, ...companies, ...authorsCompanies, ...targets].map((profile) => {
+    return scraper.addJob({
+      entity: profile,
       params: {
         postedLimit: input.postedLimit,
         sortBy: 'date',
         page: input.page || '1',
       },
       ...commonArgs,
-    }),
-  );
-}
+    });
+  }),
+];
 
-await Promise.all([...promisesProfiles, ...promisesCompanies]).catch((error) => {
+await Promise.all(promises).catch((error) => {
   console.error(`Error scraping profiles:`, error);
 });
 

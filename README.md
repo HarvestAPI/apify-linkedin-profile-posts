@@ -8,7 +8,7 @@ Our powerful tool helps you gather posts from LinkedIn profiles or companies wit
 - Low pricing: $2 per 1k posts.
 - Fast response times deliver data in seconds 🚀
 - No caching, fresh data.
-- Concurrency: each actor works scraping 5 profiles/companies at a time.
+- Concurrency: each actor works scraping 6 profiles/companies at a time.
 
 ## How It Works
 
