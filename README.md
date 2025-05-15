@@ -14,10 +14,8 @@ Our powerful tool helps you gather posts from LinkedIn profiles or companies wit
 
 Simply provide one of the following:
 
-- List of LinkedIn profile/company URLs who posted or re-posted the content.
-- List of LinkedIn Public Identifiers who posted or re-posted the content (e.g., `williamhgates` from `https://www.linkedin.com/in/williamhgates`)
-- List if LinkedIn profile/company IDs who posted or re-posted the content (e.g. ACoAAA8BYqEBCGLg_vT_ca6mMEqkpp9nVffJ3hc)
-- (optionally) List of LinkedIn companies where authors of posts work (e.g., `Microsoft`, `Google`).
+- `targetUrls` List of LinkedIn profile/company URLs who posted or re-posted the content.
+- `authorsCompanies` (optionally) List of LinkedIn companies where authors of posts work. LinkedIn URLs (recommended) or just company names for us to search in LinkedIn (e.g., `Microsoft`, `Google`).
 
 Other params (optionally):
 
@@ -174,4 +172,5 @@ The actor stores results in a dataset. You can export data in various formats su
 We continuously enhance our tools based on user feedback. If you encounter technical issues or have suggestions for improvement:
 
 - Create an issue on the actor’s Issues tab in Apify Console
-- Contacts us at contact@harvest-api.com
+- Chat with us on our [Discord server](https://discord.gg/TGA9k9u2gE)
+- Or contact us at contact@harvest-api.com
