@@ -15,7 +15,6 @@ Our powerful tool helps you gather posts from LinkedIn profiles or companies wit
 Simply provide one of the following:
 
 - `targetUrls` List of LinkedIn profile/company URLs who posted or re-posted the content.
-- `authorsCompanies` (optionally) List of LinkedIn companies where authors of posts work. LinkedIn URLs (recommended) or just company names for us to search in LinkedIn (e.g., `Microsoft`, `Google`).
 
 Other params (optionally):
 
@@ -23,7 +22,7 @@ Other params (optionally):
 - `scrapePages` - Number of pages to scrape, if `maxPosts` is not set. Each page is 20 posts. Posts sorted by date.
 - `page` - Page number to start scraping from. Default is 1.
 
-**If you want to search post by text queries, you can use our Post Search scraper [Linkedin Post Search Scraper](https://apify.com/harvestapi/linkedin-post-search).**
+**If you want to search post by text queries or more advanced filters, you can use our Post Search scraper [Linkedin Post Search Scraper](https://apify.com/harvestapi/linkedin-post-search).**
 
 ### Data You'll Receive
 
