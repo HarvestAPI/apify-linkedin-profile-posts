@@ -127,9 +127,7 @@ export function createHarvestApiScraper({ concurrency }: { concurrency: number }
         processedProfilesCounter++;
 
         console.info(
-          `Scraped posts for ${entityKey}. Posts found ${postsCounter} Elapsed: ${(
-            elapsed / 1000
-          ).toFixed(2)}s. Progress: ${processedProfilesCounter}/${total}`,
+          `Scraped posts for ${entityKey}. Posts found ${postsCounter}. Progress: ${processedProfilesCounter}/${total}`,
         );
       },
     ),
