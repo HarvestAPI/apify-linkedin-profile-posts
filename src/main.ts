@@ -1,7 +1,7 @@
 // Apify SDK - toolkit for building Apify Actors (Read more at https://docs.apify.com/sdk/js/).
 import { Actor } from 'apify';
-import { createHarvestApiScraper } from './utils/scraper.js';
 import { config } from 'dotenv';
+import { createHarvestApiScraper } from './utils/scraper.js';
 
 config();
 
@@ -13,7 +13,7 @@ config();
 // The init() call configures the Actor for its environment. It's recommended to start every Actor with an init().
 await Actor.init();
 
-interface Input {
+export interface Input {
   postedLimit: '24h' | 'week' | 'month';
   page?: string;
   scrapePages?: string;
@@ -29,6 +29,11 @@ interface Input {
   authorsCompanyUrls?: string[];
   authorsCompanyPublicIdentifiers?: string[];
   authorsCompanyIds?: string[];
+
+  scrapeReactions?: boolean;
+  maxReactions?: number;
+  scrapeComments?: boolean;
+  maxComments?: number;
 }
 // Structure of input is defined in input_schema.json
 const input = await Actor.getInput<Input>();
@@ -60,8 +65,19 @@ const authorsCompanies = [
 ];
 const targets = [...(input.targetUrls || []).map((url) => ({ targetUrl: url }))];
 
+const { actorMaxPaidDatasetItems } = Actor.getEnv();
+
+const state: {
+  itemsLeft: number;
+} = {
+  itemsLeft: actorMaxPaidDatasetItems || 1000000,
+};
+
 const scraper = createHarvestApiScraper({
-  concurrency: 6,
+  concurrency: input.scrapeReactions || input.scrapeComments ? 1 : 6,
+  state,
+  input,
+  reactionsConcurrency: 6,
 });
 
 const commonArgs = {

@@ -20,6 +20,33 @@
       "prefill": 5
     },
 
+    "scrapeReactions": {
+      "sectionCaption": "Reactions",
+      "title": "Scrape Reactions",
+      "type": "boolean",
+      "description": "Scrape reactions of posts.",
+      "prefill": false
+    },
+    "maxReactions": {
+      "title": "Maximum number of reactions to scrape per post",
+      "type": "integer",
+      "description": "Maximum number of reactions to scrape per post. Default is 5.",
+      "prefill": 5
+    },
+    "scrapeComments": {
+      "sectionCaption": "Comments",
+      "title": "Scrape Comments",
+      "type": "boolean",
+      "description": "Scrape comments of posts.",
+      "prefill": false
+    },
+    "maxComments": {
+      "title": "Maximum number of comments to scrape per post",
+      "type": "integer",
+      "description": "Maximum number of comments to scrape per post. Default is 5.",
+      "prefill": 5
+    },
+
     "scrapePages": {
       "sectionCaption": "Advanced",
       "title": "Number of pages to scrape",
