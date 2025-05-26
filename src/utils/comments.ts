@@ -1,5 +1,5 @@
 import { Actor } from 'apify';
-import { Input } from '../main.js';
+import { Input, ScraperState } from '../main.js';
 import { createLinkedinScraper } from '@harvestapi/scraper';
 
 const { actorId, actorRunId, actorBuildId, userId, actorMaxPaidDatasetItems, memoryMbytes } =
@@ -13,7 +13,7 @@ export async function scrapeCommentsForPost({
 }: {
   input: Input;
   post: { id: string; linkedinUrl: string };
-  state: { itemsLeft: number };
+  state: ScraperState;
   concurrency: number;
 }): Promise<{
   comments: any[];
@@ -56,7 +56,7 @@ export async function scrapeCommentsForPost({
       console.info(`Scraped comment ${itemsCounter} for post ${post.id}`);
 
       comments.push(item);
-      await Actor.pushData({
+      state.datasetLastPushPromise = Actor.pushData({
         type: 'comment',
         ...(item as any),
       });

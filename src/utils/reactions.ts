@@ -1,5 +1,5 @@
 import { Actor } from 'apify';
-import { Input } from '../main.js';
+import { Input, ScraperState } from '../main.js';
 import { createLinkedinScraper } from '@harvestapi/scraper';
 
 const { actorId, actorRunId, actorBuildId, userId, actorMaxPaidDatasetItems, memoryMbytes } =
@@ -13,7 +13,7 @@ export async function scrapeReactionsForPost({
 }: {
   input: Input;
   post: { id: string; linkedinUrl: string };
-  state: { itemsLeft: number };
+  state: ScraperState;
   concurrency: number;
 }): Promise<{
   reactions: any[];
@@ -57,7 +57,7 @@ export async function scrapeReactionsForPost({
       console.info(`Scraped reaction ${postReactionsCounter} for post ${post.id}`);
 
       reactions.push(item);
-      await Actor.pushData({
+      state.datasetLastPushPromise = Actor.pushData({
         type: 'reaction',
         ...item,
       });

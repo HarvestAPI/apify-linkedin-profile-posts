@@ -2,7 +2,7 @@ import { Actor } from 'apify';
 import { createConcurrentQueues } from './queue.js';
 import { scrapeReactionsForPost } from './reactions.js';
 import { scrapeCommentsForPost } from './comments.js';
-import { Input } from '../main.js';
+import { Input, ScraperState } from '../main.js';
 import { config } from 'dotenv';
 
 config();
@@ -16,7 +16,7 @@ export function createHarvestApiScraper({
   state,
   input,
 }: {
-  state: { itemsLeft: number };
+  state: ScraperState;
   input: Input;
   concurrency: number;
   reactionsConcurrency: number;
@@ -147,7 +147,7 @@ export function createHarvestApiScraper({
                     return { comments: [] };
                   });
 
-                  await Actor.pushData({
+                  state.datasetLastPushPromise = Actor.pushData({
                     type: 'post',
                     ...post,
                     reactions,

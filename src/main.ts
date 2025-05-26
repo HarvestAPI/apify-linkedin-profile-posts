@@ -67,9 +67,11 @@ const targets = [...(input.targetUrls || []).map((url) => ({ targetUrl: url }))]
 
 const { actorMaxPaidDatasetItems } = Actor.getEnv();
 
-const state: {
+export type ScraperState = {
   itemsLeft: number;
-} = {
+  datasetLastPushPromise?: Promise<any>;
+};
+const state: ScraperState = {
   itemsLeft: actorMaxPaidDatasetItems || 1000000,
 };
 
@@ -103,6 +105,8 @@ const promises = [
 await Promise.all(promises).catch((error) => {
   console.error(`Error scraping profiles:`, error);
 });
+
+await state.datasetLastPushPromise;
 
 // Gracefully exit the Actor process. It's recommended to quit all Actors with an exit().
 await Actor.exit();
