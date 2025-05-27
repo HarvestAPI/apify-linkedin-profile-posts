@@ -60,6 +60,8 @@ export function createHarvestApiScraper({
           return;
         }
         const entityKey = JSON.stringify(entity);
+        let maxDateReached = false;
+        let paginationToken: string = '';
 
         console.info(`Fetching posts for ${entityKey}...`);
         // const timestamp = new Date();
@@ -76,12 +78,16 @@ export function createHarvestApiScraper({
           if (maxPosts && postsCounter >= maxPosts) {
             break;
           }
+          if (maxDateReached) {
+            break;
+          }
 
           let postsOnPageCounter = 0;
 
           const queryParams = new URLSearchParams({
             ...params,
             ...entity,
+            paginationToken,
             page: String(i),
           });
 
@@ -105,6 +111,8 @@ export function createHarvestApiScraper({
               return {};
             });
 
+          paginationToken = response?.pagination?.paginationToken;
+
           if (response.elements && response.status < 400) {
             for (const post of response.elements) {
               if (state.itemsLeft <= 0) {
@@ -113,6 +121,31 @@ export function createHarvestApiScraper({
               }
               if (maxPosts && postsCounter >= maxPosts) {
                 break;
+              }
+              if (maxDateReached) {
+                break;
+              }
+
+              if (params.postedLimit) {
+                let maxDate: Date | null = null;
+                if (params.postedLimit === '24h') {
+                  maxDate = new Date(Date.now() - 24 * 60 * 60 * 1000);
+                } else if (params.postedLimit === 'week') {
+                  maxDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+                } else if (params.postedLimit === 'month') {
+                  maxDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+                }
+
+                const postPostedDate = post?.postedAt?.timestamp
+                  ? new Date(post?.postedAt?.timestamp)
+                  : null;
+
+                if (maxDate && postPostedDate) {
+                  if (maxDate.getTime() > postPostedDate.getTime()) {
+                    maxDateReached = true;
+                    continue;
+                  }
+                }
               }
 
               if (post.id) {
