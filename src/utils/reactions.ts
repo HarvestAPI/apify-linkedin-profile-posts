@@ -1,6 +1,7 @@
 import { Actor } from 'apify';
 import { Input, ScraperState } from '../main.js';
 import { createLinkedinScraper } from '@harvestapi/scraper';
+import { User } from 'apify-client';
 
 const { actorId, actorRunId, actorBuildId, userId, actorMaxPaidDatasetItems, memoryMbytes } =
   Actor.getEnv();
@@ -10,11 +11,13 @@ export async function scrapeReactionsForPost({
   state,
   input,
   concurrency,
+  user,
 }: {
   input: Input;
   post: { id: string; linkedinUrl: string };
   state: ScraperState;
   concurrency: number;
+  user: User | null;
 }): Promise<{
   reactions: any[];
 }> {
@@ -32,6 +35,8 @@ export async function scrapeReactionsForPost({
       'x-apify-actor-build-id': actorBuildId!,
       'x-apify-memory-mbytes': String(memoryMbytes),
       'x-apify-actor-max-paid-dataset-items': String(actorMaxPaidDatasetItems) || '0',
+      'x-apify-username': user?.username || '',
+      'x-apify-user-is-paying': (user as Record<string, any> | null)?.isPaying,
     },
   });
 

@@ -75,7 +75,7 @@ const state: ScraperState = {
   itemsLeft: actorMaxPaidDatasetItems || 1000000,
 };
 
-const scraper = createHarvestApiScraper({
+const scraper = await createHarvestApiScraper({
   concurrency: 6,
   state,
   input,

@@ -1,16 +1,16 @@
 import { Actor } from 'apify';
+import { config } from 'dotenv';
+import { Input, ScraperState } from '../main.js';
+import { scrapeCommentsForPost } from './comments.js';
 import { createConcurrentQueues } from './queue.js';
 import { scrapeReactionsForPost } from './reactions.js';
-import { scrapeCommentsForPost } from './comments.js';
-import { Input, ScraperState } from '../main.js';
-import { config } from 'dotenv';
 
 config();
 
 const { actorId, actorRunId, actorBuildId, userId, actorMaxPaidDatasetItems, memoryMbytes } =
   Actor.getEnv();
 
-export function createHarvestApiScraper({
+export async function createHarvestApiScraper({
   concurrency,
   reactionsConcurrency,
   state,
@@ -25,6 +25,8 @@ export function createHarvestApiScraper({
   let processedProfilesCounter = 0;
 
   const scrapedPostsPerProfile: Record<string, Record<string, boolean>> = {};
+  const client = Actor.newClient();
+  const user = userId ? await client.user(userId).get() : null;
 
   return {
     addJob: createConcurrentQueues(
@@ -102,6 +104,8 @@ export function createHarvestApiScraper({
                 'x-apify-actor-build-id': actorBuildId!,
                 'x-apify-memory-mbytes': String(memoryMbytes),
                 'x-apify-actor-max-paid-dataset-items': String(actorMaxPaidDatasetItems) || '0',
+                'x-apify-username': user?.username || '',
+                'x-apify-user-is-paying': (user as Record<string, any> | null)?.isPaying,
               },
             },
           )
@@ -162,6 +166,7 @@ export function createHarvestApiScraper({
                     state,
                     input,
                     concurrency: reactionsConcurrency,
+                    user,
                   }).catch((error) => {
                     console.error(`Error scraping reactions for post ${post.id}:`, error);
                     return { reactions: [] };
@@ -172,6 +177,7 @@ export function createHarvestApiScraper({
                     state,
                     input,
                     concurrency: reactionsConcurrency,
+                    user,
                   }).catch((error) => {
                     console.error(`Error scraping comments for post ${post.id}:`, error);
                     return { comments: [] };
