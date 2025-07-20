@@ -53,17 +53,12 @@
       "description": "Maximum number of comments to scrape per post. Default is 5.",
       "prefill": 5
     },
-
-    "scrapePages": {
-      "sectionCaption": "Advanced",
-      "title": "Number of pages to scrape",
-      "type": "integer",
-      "description": "Number of pages to scrape from the profile. Default is 1. Page size is about 20 posts."
-    },
-    "page": {
-      "title": "Page number to start scraping from",
-      "type": "integer",
-      "description": "Page number to start scraping from. Default is 1. Page size is about 20 posts."
+    "commentsPostedLimit": {
+      "title": "Comments Posted Limit (filter)",
+      "type": "string",
+      "description": "Fetch comments no older than X time. Options: '24h', 'week', 'month'.",
+      "editor": "select",
+      "enum": ["any", "24h", "week", "month"]
     }
   }
 }

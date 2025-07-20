@@ -34,10 +34,12 @@ export interface Input {
   maxReactions?: number;
   scrapeComments?: boolean;
   maxComments?: number;
+  commentsPostedLimit?: 'any' | '24h' | 'week' | 'month';
 }
 // Structure of input is defined in input_schema.json
 const input = await Actor.getInput<Input>();
 if (!input) throw new Error('Input is missing!');
+const originalInput = JSON.parse(JSON.stringify(input)); // deep copy to avoid mutation
 
 const profiles = [
   ...(input.profileUrls || []).map((url) => ({ profilePublicIdentifier: url })),
@@ -80,6 +82,7 @@ const scraper = await createHarvestApiScraper({
   state,
   input,
   reactionsConcurrency: 2,
+  originalInput,
 });
 
 const commonArgs = {

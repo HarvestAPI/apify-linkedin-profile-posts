@@ -15,11 +15,13 @@ export async function createHarvestApiScraper({
   reactionsConcurrency,
   state,
   input,
+  originalInput,
 }: {
   state: ScraperState;
   input: Input;
   concurrency: number;
   reactionsConcurrency: number;
+  originalInput: Input;
 }) {
   let processedPostsCounter = 0;
   let processedProfilesCounter = 0;
@@ -167,6 +169,7 @@ export async function createHarvestApiScraper({
                     input,
                     concurrency: reactionsConcurrency,
                     user,
+                    originalInput,
                   }).catch((error) => {
                     console.error(`Error scraping reactions for post ${post.id}:`, error);
                     return { reactions: [] };
@@ -178,6 +181,7 @@ export async function createHarvestApiScraper({
                     input,
                     concurrency: reactionsConcurrency,
                     user,
+                    originalInput,
                   }).catch((error) => {
                     console.error(`Error scraping comments for post ${post.id}:`, error);
                     return { comments: [] };
@@ -188,6 +192,7 @@ export async function createHarvestApiScraper({
                     ...post,
                     reactions,
                     comments,
+                    input: originalInput,
                   });
                 }
               }
