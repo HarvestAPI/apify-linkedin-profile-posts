@@ -1,7 +1,7 @@
-import { Actor } from 'apify';
-import { Input, ScraperState } from '../main.js';
 import { createLinkedinScraper } from '@harvestapi/scraper';
+import { Actor } from 'apify';
 import { User } from 'apify-client';
+import { Input, ScraperState } from '../main.js';
 
 const { actorId, actorRunId, actorBuildId, userId, actorMaxPaidDatasetItems, memoryMbytes } =
   Actor.getEnv();
@@ -12,14 +12,12 @@ export async function scrapeReactionsForPost({
   input,
   concurrency,
   user,
-  originalInput,
 }: {
   input: Input;
   post: { id: string; linkedinUrl: string };
   state: ScraperState;
   concurrency: number;
   user: User | null;
-  originalInput: Input;
 }): Promise<{
   reactions: any[];
 }> {
@@ -49,11 +47,12 @@ export async function scrapeReactionsForPost({
   }
 
   const reactions: any[] = [];
+  const query = {
+    post: post.linkedinUrl || post.id,
+  };
 
   await scraperLib.scrapePostReactions({
-    query: {
-      post: post.linkedinUrl || post.id,
-    },
+    query,
     outputType: 'callback',
     onItemScraped: async ({ item }) => {
       if (!item.id) return;
@@ -67,7 +66,7 @@ export async function scrapeReactionsForPost({
       state.datasetLastPushPromise = Actor.pushData({
         type: 'reaction',
         ...item,
-        input: originalInput,
+        query,
       });
     },
     overrideConcurrency: concurrency,

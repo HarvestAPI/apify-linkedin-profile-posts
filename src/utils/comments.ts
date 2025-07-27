@@ -12,14 +12,12 @@ export async function scrapeCommentsForPost({
   input,
   concurrency,
   user,
-  originalInput,
 }: {
   input: Input;
   post: { id: string; linkedinUrl: string };
   state: ScraperState;
   concurrency: number;
   user: User | null;
-  originalInput: Input;
 }): Promise<{
   comments: any[];
 }> {
@@ -48,12 +46,13 @@ export async function scrapeCommentsForPost({
     maxComments = state.itemsLeft;
   }
   const comments: any[] = [];
+  const query = {
+    post: post.linkedinUrl || post.id,
+    postedLimit: input.commentsPostedLimit === 'any' ? undefined : input.commentsPostedLimit,
+  };
 
   await scraperLib.scrapePostComments({
-    query: {
-      post: post.linkedinUrl || post.id,
-      postedLimit: input.commentsPostedLimit === 'any' ? undefined : input.commentsPostedLimit,
-    },
+    query: query,
     outputType: 'callback',
     onItemScraped: async ({ item }) => {
       if (!item.id) return;
@@ -67,7 +66,7 @@ export async function scrapeCommentsForPost({
       state.datasetLastPushPromise = Actor.pushData({
         type: 'comment',
         ...(item as any),
-        input: originalInput,
+        query,
       });
     },
     overrideConcurrency: concurrency,

@@ -15,7 +15,6 @@ export async function createHarvestApiScraper({
   reactionsConcurrency,
   state,
   input,
-  originalInput,
 }: {
   state: ScraperState;
   input: Input;
@@ -169,7 +168,6 @@ export async function createHarvestApiScraper({
                     input,
                     concurrency: reactionsConcurrency,
                     user,
-                    originalInput,
                   }).catch((error) => {
                     console.error(`Error scraping reactions for post ${post.id}:`, error);
                     return { reactions: [] };
@@ -181,18 +179,24 @@ export async function createHarvestApiScraper({
                     input,
                     concurrency: reactionsConcurrency,
                     user,
-                    originalInput,
                   }).catch((error) => {
                     console.error(`Error scraping comments for post ${post.id}:`, error);
                     return { comments: [] };
                   });
+
+                  const query = Object.fromEntries(queryParams);
+                  for (const key of Object.keys(query)) {
+                    if (!query[key] || query[key] === 'undefined') {
+                      delete query[key];
+                    }
+                  }
 
                   state.datasetLastPushPromise = Actor.pushData({
                     type: 'post',
                     ...post,
                     reactions,
                     comments,
-                    input: originalInput,
+                    query,
                   });
                 }
               }
