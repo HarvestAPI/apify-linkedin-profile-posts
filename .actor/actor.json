@@ -5,7 +5,7 @@
   "description": "Extract posts from LinkedIn profiles including content, media, engagement and more. No cookies or account required. Concurrency + fast response times make mass scraping fast ⚡",
   "version": "0.0",
   "minMemoryMbytes": 128,
-  "maxMemoryMbytes": 256,
+  "maxMemoryMbytes": 512,
   "usesStandbyMode": false,
   "input": "./input_schema.json",
   "dockerfile": "./Dockerfile"
