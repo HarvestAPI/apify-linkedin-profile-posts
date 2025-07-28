@@ -63,7 +63,7 @@ export async function scrapeCommentsForPost({
       console.info(`Scraped comment ${itemsCounter} for post ${post.id}`);
 
       comments.push(item);
-      state.datasetLastPushPromise = Actor.pushData({
+      await Actor.pushData({
         type: 'comment',
         ...(item as any),
         query,

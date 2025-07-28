@@ -191,7 +191,7 @@ export async function createHarvestApiScraper({
                     }
                   }
 
-                  state.datasetLastPushPromise = Actor.pushData({
+                  await Actor.pushData({
                     type: 'post',
                     ...post,
                     reactions,
