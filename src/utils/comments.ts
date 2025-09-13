@@ -2,6 +2,7 @@ import { Actor } from 'apify';
 import { Input, ScraperState } from '../main.js';
 import { createLinkedinScraper } from '@harvestapi/scraper';
 import { User } from 'apify-client';
+import { subMonths } from 'date-fns';
 
 const { actorId, actorRunId, actorBuildId, userId, actorMaxPaidDatasetItems, memoryMbytes } =
   Actor.getEnv();
@@ -25,6 +26,20 @@ export async function scrapeCommentsForPost({
     return { comments: [] };
   }
 
+  let maxDate: Date | null = null;
+  if (input.commentsPostedLimit === '24h') {
+    maxDate = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  } else if (input.commentsPostedLimit === 'week') {
+    maxDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  } else if (input.commentsPostedLimit === 'month') {
+    maxDate = subMonths(new Date(), 1);
+  } else if (input.commentsPostedLimit === '3months') {
+    maxDate = subMonths(new Date(), 3);
+  } else if (input.commentsPostedLimit === '6months') {
+    maxDate = subMonths(new Date(), 6);
+  } else if (input.commentsPostedLimit === 'year') {
+    maxDate = subMonths(new Date(), 12);
+  }
   const scraperLib = createLinkedinScraper({
     apiKey: process.env.HARVESTAPI_TOKEN!,
     baseUrl: process.env.HARVESTAPI_URL || 'https://api.harvest-api.com',
@@ -48,12 +63,22 @@ export async function scrapeCommentsForPost({
   const comments: any[] = [];
   const query = {
     post: post.linkedinUrl || post.id,
-    postedLimit: input.commentsPostedLimit === 'any' ? undefined : input.commentsPostedLimit,
   };
 
   await scraperLib.scrapePostComments({
     query: query,
     outputType: 'callback',
+    onPageFetched: async ({ data }) => {
+      if (data?.elements) {
+        data.elements = data.elements.filter((item) => {
+          if (maxDate && item?.createdAt) {
+            const createdAt = new Date(item.createdAt);
+            if (createdAt < maxDate) return false;
+          }
+          return true;
+        });
+      }
+    },
     onItemScraped: async ({ item }) => {
       if (!item.id) return;
       itemsCounter++;

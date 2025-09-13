@@ -5,6 +5,7 @@ import { scrapeCommentsForPost } from './comments.js';
 import { createConcurrentQueues } from './queue.js';
 import { scrapeReactionsForPost } from './reactions.js';
 import { subMonths } from 'date-fns';
+import { ApiListResponse, PostShort } from '@harvestapi/scraper';
 
 config();
 
@@ -86,7 +87,7 @@ export async function createHarvestApiScraper({
         }
         const entityKey = JSON.stringify(entity);
         let maxDateReached = false;
-        let paginationToken: string = '';
+        let paginationToken: string | undefined | null = null;
 
         console.info(`Fetching posts for ${entityKey}...`);
         // const timestamp = new Date();
@@ -112,11 +113,11 @@ export async function createHarvestApiScraper({
           const queryParams = new URLSearchParams({
             ...params,
             ...entity,
-            paginationToken,
+            ...(paginationToken ? { paginationToken } : {}),
             page: String(i),
           });
 
-          const response = await fetch(
+          const response: ApiListResponse<PostShort> = await fetch(
             `${process.env.HARVESTAPI_URL || 'https://api.harvest-api.com'}/linkedin/post-search?${queryParams.toString()}`,
             {
               headers: {
@@ -149,17 +150,14 @@ export async function createHarvestApiScraper({
               if (maxPosts && postsCounter >= maxPosts) {
                 break;
               }
+              const postPostedDate = post?.postedAt?.timestamp
+                ? new Date(post?.postedAt?.timestamp)
+                : null;
 
-              if (params.postedLimit) {
-                const postPostedDate = post?.postedAt?.timestamp
-                  ? new Date(post?.postedAt?.timestamp)
-                  : null;
-
-                if (maxDate && postPostedDate) {
-                  if (maxDate.getTime() > postPostedDate.getTime()) {
-                    maxDateReached = true;
-                    continue;
-                  }
+              if (maxDate && postPostedDate) {
+                if (maxDate.getTime() > postPostedDate.getTime()) {
+                  maxDateReached = true;
+                  continue;
                 }
               }
 
@@ -175,27 +173,32 @@ export async function createHarvestApiScraper({
                     `Scraped post #${processedProfilesCounter}_${postsCounter} id:${post.id} for ${entityKey}`,
                   );
 
-                  const { reactions } = await scrapeReactionsForPost({
-                    post,
-                    state,
-                    input,
-                    concurrency: reactionsConcurrency,
-                    user,
-                  }).catch((error) => {
-                    console.error(`Error scraping reactions for post ${post.id}:`, error);
-                    return { reactions: [] };
-                  });
+                  const { reactions } =
+                    post?.engagement?.likes || post?.engagement?.reactions
+                      ? await scrapeReactionsForPost({
+                          post,
+                          state,
+                          input,
+                          concurrency: reactionsConcurrency,
+                          user,
+                        }).catch((error) => {
+                          console.error(`Error scraping reactions for post ${post.id}:`, error);
+                          return { reactions: [] };
+                        })
+                      : { reactions: [] };
 
-                  const { comments } = await scrapeCommentsForPost({
-                    post,
-                    state,
-                    input,
-                    concurrency: reactionsConcurrency,
-                    user,
-                  }).catch((error) => {
-                    console.error(`Error scraping comments for post ${post.id}:`, error);
-                    return { comments: [] };
-                  });
+                  const { comments } = post?.engagement?.comments
+                    ? await scrapeCommentsForPost({
+                        post,
+                        state,
+                        input,
+                        concurrency: reactionsConcurrency,
+                        user,
+                      }).catch((error) => {
+                        console.error(`Error scraping comments for post ${post.id}:`, error);
+                        return { comments: [] };
+                      })
+                    : { comments: [] };
 
                   const query = Object.fromEntries(queryParams);
                   for (const key of Object.keys(query)) {

@@ -14,7 +14,7 @@ config();
 await Actor.init();
 
 export interface Input {
-  postedLimit: '24h' | 'week' | 'month';
+  postedLimit: '24h' | 'week' | 'month' | '3months' | '6months' | 'year' | 'any';
   page?: string;
   scrapePages?: string;
   maxPosts: number | string;
@@ -34,7 +34,7 @@ export interface Input {
   maxReactions?: number;
   scrapeComments?: boolean;
   maxComments?: number;
-  commentsPostedLimit?: 'any' | '24h' | 'week' | 'month';
+  commentsPostedLimit?: 'any' | '24h' | 'week' | 'month' | '3months' | '6months' | 'year';
 }
 // Structure of input is defined in input_schema.json
 const input = await Actor.getInput<Input>();
@@ -96,7 +96,6 @@ const promises = [
     return scraper.addJob({
       entity: profile,
       params: {
-        postedLimit: input.postedLimit,
         sortBy: 'date',
         page: input.page || '1',
       },
