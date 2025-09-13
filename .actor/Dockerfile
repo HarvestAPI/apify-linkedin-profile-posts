@@ -1,61 +1,47 @@
-# Specify the base Docker image. You can read more about
-# the available images at https://docs.apify.com/sdk/js/docs/guides/docker-images
-# You can also use any other image from Docker Hub.
+# ~~~ Stage 1: Build the application ~~~
+# Use a specific version for reproducibility and name the stage 'builder'.
 FROM apify/actor-node:20 AS builder
 
-# Check preinstalled packages
-RUN npm ls apify
+# Set the working directory.
+WORKDIR /usr/src/app
 
-# Copy just package.json and package-lock.json
-# to speed up the build using Docker layer cache.
-COPY package*.json ./
+# Copy package manifests. This layer is cached as long as these files don't change.
+COPY package*.json pnpm-lock.yaml ./
 
-# Install all dependencies. Don't audit to speed up the installation.
-RUN npm install --include=dev --audit=false
+# Install pnpm and all dependencies (including devDependencies needed for build).
+# Using --frozen-lockfile is faster and ensures an exact install from the lock file.
+RUN npm install -g pnpm && pnpm install --frozen-lockfile
 
-# Next, copy the source files using the user set
-# in the base image.
-COPY . ./
+# Copy the rest of the source code.
+# This is done *after* installing dependencies, so code changes don't invalidate the dependency cache.
+COPY . .
 
-# Install all dependencies and build the project.
-# Don't audit to speed up the installation.
-RUN npm run build
+# Run the build script to generate the distributable files (e.g., in the /dist folder).
+RUN pnpm run build
 
-# Create final image
+# ~~~ Stage 2: Create the final, lean production image ~~~
+# Start from the same clean base image.
 FROM apify/actor-node:20
 
-# Check preinstalled packages
-RUN npm ls apify
+# The apify/actor-node image sets the user and WORKDIR to /home/apify by default.
+# We will work within that established environment.
+WORKDIR /home/apify
 
-# Copy just package.json and package-lock.json
-# to speed up the build using Docker layer cache.
-COPY package*.json ./
+# Copy package manifests again to install production dependencies.
+COPY package*.json pnpm-lock.yaml ./
 
-# Install NPM packages, skip optional and development dependencies to
-# keep the image small. Avoid logging too much and print the dependency
-# tree for debugging
-RUN npm --quiet set progress=false \
-    && npm install --omit=dev --omit=optional \
-    && echo "Installed NPM packages:" \
-    && (npm list --omit=dev --all || true) \
-    && echo "Node.js version:" \
-    && node --version \
-    && echo "NPM version:" \
-    && npm --version \
-    && rm -r ~/.npm
+# Install pnpm and ONLY production dependencies.
+RUN npm install -g pnpm && pnpm install --prod --frozen-lockfile
 
-# Copy built JS files from builder image
+# Copy the built application files from the 'builder' stage.
+# This is the key step: we only bring over the compiled code, not the source.
 COPY --from=builder /usr/src/app/dist ./dist
 
-# Next, copy the remaining files and directories with the source code.
-# Since we do this after NPM install, quick build will be really fast
-# for most source file changes.
-COPY . ./
-
-# Create and run as a non-root user.
+# The base image already creates and sets the 'apify' user.
 RUN adduser -h /home/apify -D apify && \
     chown -R apify:apify ./
-USER apify
+
+USER apify 
 
 # Run the image.
 CMD npm run start:prod --silent

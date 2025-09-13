@@ -4,6 +4,7 @@ import { Input, ScraperState } from '../main.js';
 import { scrapeCommentsForPost } from './comments.js';
 import { createConcurrentQueues } from './queue.js';
 import { scrapeReactionsForPost } from './reactions.js';
+import { subMonths } from 'date-fns';
 
 config();
 
@@ -34,6 +35,21 @@ export async function createHarvestApiScraper({
   const scrapedPostsPerProfile: Record<string, Record<string, boolean>> = {};
   const client = Actor.newClient();
   const user = userId ? await client.user(userId).get() : null;
+
+  let maxDate: Date | null = null;
+  if (input.postedLimit === '24h') {
+    maxDate = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  } else if (input.postedLimit === 'week') {
+    maxDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  } else if (input.postedLimit === 'month') {
+    maxDate = subMonths(new Date(), 1);
+  } else if (input.postedLimit === '3months') {
+    maxDate = subMonths(new Date(), 3);
+  } else if (input.postedLimit === '6months') {
+    maxDate = subMonths(new Date(), 6);
+  } else if (input.postedLimit === 'year') {
+    maxDate = subMonths(new Date(), 12);
+  }
 
   return {
     addJob: createConcurrentQueues(
@@ -135,15 +151,6 @@ export async function createHarvestApiScraper({
               }
 
               if (params.postedLimit) {
-                let maxDate: Date | null = null;
-                if (params.postedLimit === '24h') {
-                  maxDate = new Date(Date.now() - 24 * 60 * 60 * 1000);
-                } else if (params.postedLimit === 'week') {
-                  maxDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-                } else if (params.postedLimit === 'month') {
-                  maxDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-                }
-
                 const postPostedDate = post?.postedAt?.timestamp
                   ? new Date(post?.postedAt?.timestamp)
                   : null;
