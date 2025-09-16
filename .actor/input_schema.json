@@ -44,7 +44,7 @@
       "title": "Scrape Reactions",
       "type": "boolean",
       "description": "Scrape reactions of posts.",
-      "prefill": false
+      "default": false
     },
     "maxReactions": {
       "title": "Maximum number of reactions to scrape per post",
@@ -57,7 +57,7 @@
       "title": "Scrape Comments",
       "type": "boolean",
       "description": "Scrape comments of posts.",
-      "prefill": false
+      "default": false
     },
     "maxComments": {
       "title": "Maximum number of comments to scrape per post",
