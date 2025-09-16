@@ -30,9 +30,6 @@ export async function createHarvestApiScraper({
   reactionsConcurrency: number;
   originalInput: Input;
 }) {
-  let processedPostsCounter = 0;
-  let processedProfilesCounter = 0;
-
   const scrapedPostsPerProfile: Record<string, Record<string, boolean>> = {};
   const client = Actor.newClient();
   const user = userId ? await client.user(userId).get() : null;
@@ -143,6 +140,12 @@ export async function createHarvestApiScraper({
 
           if (response.elements && response.status < 400) {
             for (const post of response.elements) {
+              if (!post.id) {
+                console.warn(
+                  `Post without ID found, skipping. Entity: ${entityKey}, post: ${JSON.stringify(post)}`,
+                );
+                continue;
+              }
               if (state.itemsLeft <= 0) {
                 console.warn(`Max scraped items reached: ${actorMaxPaidDatasetItems}`);
                 return;
@@ -161,60 +164,65 @@ export async function createHarvestApiScraper({
                 }
               }
 
-              if (post.id) {
-                scrapedPostsPerProfile[entityKey] = scrapedPostsPerProfile[entityKey] || {};
-                if (!scrapedPostsPerProfile[entityKey][post.id]) {
-                  scrapedPostsPerProfile[entityKey][post.id] = true;
-                  processedPostsCounter++;
-                  postsCounter++;
-                  postsOnPageCounter++;
-                  state.itemsLeft -= 1;
-                  console.info(
-                    `Scraped post #${processedProfilesCounter}_${postsCounter} id:${post.id} for ${entityKey}`,
-                  );
+              if (input.includeReposts === false && post.repostedBy) {
+                continue;
+              }
+              if (input.includeQuotePosts === false && post.repost) {
+                continue;
+              }
 
-                  const { reactions } =
-                    post?.engagement?.likes || post?.engagement?.reactions
-                      ? await scrapeReactionsForPost({
-                          post,
-                          state,
-                          input,
-                          concurrency: reactionsConcurrency,
-                          user,
-                        }).catch((error) => {
-                          console.error(`Error scraping reactions for post ${post.id}:`, error);
-                          return { reactions: [] };
-                        })
-                      : { reactions: [] };
+              scrapedPostsPerProfile[entityKey] = scrapedPostsPerProfile[entityKey] || {};
+              if (!scrapedPostsPerProfile[entityKey][post.id]) {
+                scrapedPostsPerProfile[entityKey][post.id] = true;
+                state.scrapedItemsCount++;
+                postsCounter++;
+                postsOnPageCounter++;
+                state.itemsLeft -= 1;
+                console.info(
+                  `Scraped post #${state.processedProfilesCounter}_${postsCounter} id:${post.id} for ${entityKey}`,
+                );
 
-                  const { comments } = post?.engagement?.comments
-                    ? await scrapeCommentsForPost({
+                const { reactions } =
+                  post?.engagement?.likes || post?.engagement?.reactions
+                    ? await scrapeReactionsForPost({
                         post,
                         state,
                         input,
                         concurrency: reactionsConcurrency,
                         user,
                       }).catch((error) => {
-                        console.error(`Error scraping comments for post ${post.id}:`, error);
-                        return { comments: [] };
+                        console.error(`Error scraping reactions for post ${post.id}:`, error);
+                        return { reactions: [] };
                       })
-                    : { comments: [] };
+                    : { reactions: [] };
 
-                  const query = Object.fromEntries(queryParams);
-                  for (const key of Object.keys(query)) {
-                    if (!query[key] || query[key] === 'undefined') {
-                      delete query[key];
-                    }
+                const { comments } = post?.engagement?.comments
+                  ? await scrapeCommentsForPost({
+                      post,
+                      state,
+                      input,
+                      concurrency: reactionsConcurrency,
+                      user,
+                    }).catch((error) => {
+                      console.error(`Error scraping comments for post ${post.id}:`, error);
+                      return { comments: [] };
+                    })
+                  : { comments: [] };
+
+                const query = Object.fromEntries(queryParams);
+                for (const key of Object.keys(query)) {
+                  if (!query[key] || query[key] === 'undefined') {
+                    delete query[key];
                   }
-
-                  await pushPostData({
-                    type: 'post',
-                    ...post,
-                    reactions,
-                    comments,
-                    query,
-                  });
                 }
+
+                await pushPostData({
+                  type: 'post',
+                  ...post,
+                  reactions,
+                  comments,
+                  query,
+                });
               }
             }
           } else {
@@ -224,7 +232,7 @@ export async function createHarvestApiScraper({
               delete error.credits;
             }
             console.error(
-              `Error scraping item#${processedPostsCounter + 1} ${entityKey}: ${JSON.stringify(error, null, 2)}`,
+              `Error scraping item#${state.scrapedItemsCount + 1} ${entityKey}: ${JSON.stringify(error, null, 2)}`,
             );
           }
 
@@ -234,10 +242,10 @@ export async function createHarvestApiScraper({
         }
 
         // const elapsed = new Date().getTime() - timestamp.getTime();
-        processedProfilesCounter++;
+        state.processedProfilesCounter++;
 
         console.info(
-          `Scraped posts for ${entityKey}. Posts found ${postsCounter}. Progress: ${processedProfilesCounter}/${total}`,
+          `Scraped posts for ${entityKey}. Posts found ${postsCounter}. Progress: ${state.processedProfilesCounter}/${total}`,
         );
       },
     ),

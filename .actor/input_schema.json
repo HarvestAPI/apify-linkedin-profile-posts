@@ -26,6 +26,18 @@
       "description": "Maximum number of posts to scrape per each profile or company. Default is 10. This overrides pagination. If you set this to 0, it will scrape all posts.",
       "prefill": 5
     },
+    "includeQuotePosts": {
+      "title": "Include Quote Posts (shared posts with comments)",
+      "type": "boolean",
+      "description": "Include quote posts (shared posts with comments). By default, all posts are scraped.",
+      "prefill": true
+    },
+    "includeReposts": {
+      "title": "Include Reposts (shared posts without comments)",
+      "type": "boolean",
+      "description": "Include reposts (shared posts without comments). By default, all posts are scraped.",
+      "prefill": true
+    },
 
     "scrapeReactions": {
       "sectionCaption": "Reactions",

@@ -35,6 +35,8 @@ export interface Input {
   scrapeComments?: boolean;
   maxComments?: number;
   commentsPostedLimit?: 'any' | '24h' | 'week' | 'month' | '3months' | '6months' | 'year';
+  includeReposts?: boolean;
+  includeQuotePosts?: boolean;
 }
 // Structure of input is defined in input_schema.json
 const input = await Actor.getInput<Input>();
@@ -72,8 +74,12 @@ const { actorMaxPaidDatasetItems } = Actor.getEnv();
 export type ScraperState = {
   itemsLeft: number;
   datasetLastPushPromise?: Promise<any>;
+  scrapedItemsCount: number;
+  processedProfilesCounter: number;
 };
 const state: ScraperState = {
+  scrapedItemsCount: 0,
+  processedProfilesCounter: 0,
   itemsLeft: actorMaxPaidDatasetItems || 1000000,
 };
 
@@ -109,6 +115,17 @@ await Promise.all(promises).catch((error) => {
 });
 
 await state.datasetLastPushPromise;
+
+if (
+  (input.includeQuotePosts === false || input.includeReposts === false) &&
+  state.scrapedItemsCount === 0
+) {
+  await Actor.pushData({
+    message: `No posts found.`,
+  });
+}
+
+await new Promise((resolve) => setTimeout(resolve, 1000));
 
 // Gracefully exit the Actor process. It's recommended to quit all Actors with an exit().
 await Actor.exit();
