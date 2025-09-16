@@ -7,9 +7,9 @@
       "title": "Target URLs",
       "type": "array",
       "editor": "stringList",
-      "description": "List of LinkedIn profile or company URLs to scrape. Example: `https://www.linkedin.com/in/williamhgates` will fetch posted or re-posted content by Bill Gates.",
+      "description": "List of LinkedIn profile or company URLs to scrape. Example: `https://www.linkedin.com/in/satyanadella/` will fetch posted or re-posted content by Bill Gates.",
       "prefill": [
-        "https://www.linkedin.com/in/williamhgates",
+        "https://www.linkedin.com/in/satyanadella/",
         "https://www.linkedin.com/company/google"
       ]
     },
