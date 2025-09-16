@@ -30,13 +30,13 @@
       "title": "Include Quote Posts (shared posts with comments)",
       "type": "boolean",
       "description": "Include quote posts (shared posts with comments). By default, all posts are scraped.",
-      "prefill": true
+      "default": true
     },
     "includeReposts": {
       "title": "Include Reposts (shared posts without comments)",
       "type": "boolean",
       "description": "Include reposts (shared posts without comments). By default, all posts are scraped.",
-      "prefill": true
+      "default": true
     },
 
     "scrapeReactions": {
