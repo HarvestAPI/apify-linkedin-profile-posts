@@ -26,8 +26,8 @@ Additional content:
 Other params (optionally):
 
 - `maxPosts` - Maximum number of posts to scrape per each search query. This overrides `scrapePages` pagination. If you set this to 0, it will scrape all posts.
-- `scrapePages` - Number of pages to scrape, if `maxPosts` is not set. Each page is 20 posts. Posts sorted by date.
-- `page` - Page number to start scraping from. Default is 1.
+- `includeQuotePosts` - Toggle to filter out quote posts (shared posts with comments). By default, all posts are scraped.
+- `includeReposts` - Toggle to filter out reposts (shared posts without comments). By default, all posts are scraped.
 
 **If you want to search post by text queries or more advanced filters, you can use our Post Search scraper [Linkedin Post Search Scraper](https://apify.com/harvestapi/linkedin-post-search).**
 
