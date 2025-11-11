@@ -5,7 +5,7 @@ import { scrapeCommentsForPost } from './comments.js';
 import { createConcurrentQueues } from './queue.js';
 import { scrapeReactionsForPost } from './reactions.js';
 import { subMonths } from 'date-fns';
-import { ApiListResponse, PostShort } from '@harvestapi/scraper';
+import { ApiItemResponse, ApiListResponse, PostShort } from '@harvestapi/scraper';
 
 config();
 
@@ -114,8 +114,17 @@ export async function createHarvestApiScraper({
             page: String(i),
           });
 
+          let apiPath = 'linkedin/post-search';
+          if (
+            entity.targetUrl &&
+            (entity.targetUrl.includes('linkedin.com/posts/') ||
+              entity.targetUrl.includes('linkedin.com/feed/update/'))
+          ) {
+            apiPath = 'linkedin/post';
+          }
+
           const response: ApiListResponse<PostShort> = await fetch(
-            `${process.env.HARVESTAPI_URL || 'https://api.harvest-api.com'}/linkedin/post-search?${queryParams.toString()}`,
+            `${process.env.HARVESTAPI_URL || 'https://api.harvest-api.com'}/${apiPath}?${queryParams.toString()}`,
             {
               headers: {
                 'X-API-Key': process.env.HARVESTAPI_TOKEN!,
@@ -137,6 +146,10 @@ export async function createHarvestApiScraper({
             });
 
           paginationToken = response?.pagination?.paginationToken;
+
+          if (!response.elements && (response as any as ApiItemResponse<PostShort>).element) {
+            response.elements = [(response as any as ApiItemResponse<PostShort>).element];
+          }
 
           if (response.elements && response.status < 400) {
             for (const post of response.elements) {
