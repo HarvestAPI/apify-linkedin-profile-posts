@@ -12,7 +12,7 @@ config();
 const { actorId, actorRunId, actorBuildId, userId, actorMaxPaidDatasetItems, memoryMbytes } =
   Actor.getEnv();
 
-const pushPostData = createConcurrentQueues(190, async (item: Record<string, any>) => {
+const pushPostData = createConcurrentQueues(100, async (item: Record<string, any>) => {
   await Actor.pushData({
     ...item,
   });
@@ -152,6 +152,8 @@ export async function createHarvestApiScraper({
           }
 
           if (response.elements && response.status < 400) {
+            const postPushPromises: Promise<void>[] = [];
+
             for (const post of response.elements) {
               if (!post.id) {
                 console.warn(
@@ -229,15 +231,19 @@ export async function createHarvestApiScraper({
                   }
                 }
 
-                await pushPostData({
-                  type: 'post',
-                  ...post,
-                  reactions,
-                  comments,
-                  query,
-                });
+                postPushPromises.push(
+                  pushPostData({
+                    type: 'post',
+                    ...post,
+                    reactions,
+                    comments,
+                    query,
+                  }),
+                );
               }
             }
+
+            await Promise.all(postPushPromises);
           } else {
             const error = typeof response.error === 'object' ? response.error : response;
             if (typeof error === 'object') {
