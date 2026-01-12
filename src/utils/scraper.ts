@@ -35,7 +35,9 @@ export async function createHarvestApiScraper({
   const user = userId ? await client.user(userId).get() : null;
 
   let maxDate: Date | null = null;
-  if (input.postedLimit === '24h') {
+  if (input.postedLimit === '1h') {
+    maxDate = new Date(Date.now() - 1 * 60 * 60 * 1000);
+  } else if (input.postedLimit === '24h') {
     maxDate = new Date(Date.now() - 24 * 60 * 60 * 1000);
   } else if (input.postedLimit === 'week') {
     maxDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);

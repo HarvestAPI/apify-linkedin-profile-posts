@@ -27,7 +27,9 @@ export async function scrapeCommentsForPost({
   }
 
   let maxDate: Date | null = null;
-  if (input.commentsPostedLimit === '24h') {
+  if (input.commentsPostedLimit === '1h') {
+    maxDate = new Date(Date.now() - 1 * 60 * 60 * 1000);
+  } else if (input.commentsPostedLimit === '24h') {
     maxDate = new Date(Date.now() - 24 * 60 * 60 * 1000);
   } else if (input.commentsPostedLimit === 'week') {
     maxDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
