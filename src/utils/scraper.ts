@@ -116,7 +116,7 @@ export async function createHarvestApiScraper({
             page: String(i),
           });
 
-          let apiPath = 'linkedin/post-search';
+          let apiPath = 'linkedin/profile-posts';
           if (
             entity.targetUrl &&
             (entity.targetUrl.includes('linkedin.com/posts/') ||
