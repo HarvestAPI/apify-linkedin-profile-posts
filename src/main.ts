@@ -110,18 +110,18 @@ const promises = [
   }),
 ];
 
-await Promise.all(promises).catch((error) => {
+const results = await Promise.all(promises).catch((error) => {
   console.error(`Error scraping profiles:`, error);
 });
 
 await state.datasetLastPushPromise;
 
-if (
-  (input.includeQuotePosts === false || input.includeReposts === false) &&
-  state.scrapedItemsCount === 0
-) {
+const hasCharged = results?.some((result) => result?.hasCharged) || false;
+const postsCounter = results?.reduce((acc, result) => acc + (result?.postsCounter || 0), 0) || 0;
+
+if (!postsCounter && hasCharged) {
   await Actor.pushData({
-    message: `No posts found.`,
+    message: 'No posts found',
   });
 }
 

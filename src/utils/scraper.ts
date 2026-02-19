@@ -75,14 +75,20 @@ export async function createHarvestApiScraper({
         scrapePages: number;
         maxPosts: number | null;
         total: number;
-      }) => {
+      }): Promise<{
+        hasCharged: boolean;
+        postsCounter: number;
+      }> => {
+        let hasCharged = false;
+        let postsCounter = 0;
+
         if (state.itemsLeft <= 0) {
           console.warn(`Max scraped items reached: ${actorMaxPaidDatasetItems}`);
-          return;
+          return { hasCharged, postsCounter };
         }
         if (!entity) {
           console.error(`No profile or company provided`);
-          return;
+          return { hasCharged, postsCounter };
         }
         const entityKey = JSON.stringify(entity);
         let maxDateReached = false;
@@ -90,7 +96,6 @@ export async function createHarvestApiScraper({
 
         console.info(`Fetching posts for ${entityKey}...`);
         // const timestamp = new Date();
-        let postsCounter = 0;
 
         const startPage = Number(params.page) || 1;
         const endPage = typeof maxPosts === 'number' ? 200 : startPage + (Number(scrapePages) || 1);
@@ -98,7 +103,7 @@ export async function createHarvestApiScraper({
         for (let i = startPage; i < endPage; i++) {
           if (state.itemsLeft <= 0) {
             console.warn(`Max scraped items reached: ${actorMaxPaidDatasetItems}`);
-            return;
+            return { hasCharged, postsCounter };
           }
           if (maxPosts && postsCounter >= maxPosts) {
             break;
@@ -146,6 +151,9 @@ export async function createHarvestApiScraper({
               console.error(`Error fetching posts:`, error);
               return {};
             });
+          if (response?.cost) {
+            hasCharged = true;
+          }
 
           paginationToken = response?.pagination?.paginationToken;
 
@@ -165,7 +173,7 @@ export async function createHarvestApiScraper({
               }
               if (state.itemsLeft <= 0) {
                 console.warn(`Max scraped items reached: ${actorMaxPaidDatasetItems}`);
-                return;
+                return { hasCharged, postsCounter };
               }
               if (maxPosts && postsCounter >= maxPosts) {
                 break;
@@ -270,6 +278,7 @@ export async function createHarvestApiScraper({
         console.info(
           `Scraped posts for ${entityKey}. Posts found ${postsCounter}. Progress: ${state.processedProfilesCounter}/${total}`,
         );
+        return { hasCharged, postsCounter };
       },
     ),
   };

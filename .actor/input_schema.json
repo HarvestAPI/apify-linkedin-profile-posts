@@ -13,7 +13,8 @@
         "https://www.linkedin.com/company/google",
         "https://www.linkedin.com/posts/microsoft-events_microsoft-build-has-arrived-in-seattle-and-ugcPost-7329991434395160578-GnK7/",
         "https://www.linkedin.com/feed/update/urn:li:activity:7391573088309534720/"
-      ]
+      ],
+      "maxItems": 10
     },
     "postedLimit": {
       "title": "Posted Limit (filter)",
