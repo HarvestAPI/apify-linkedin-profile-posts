@@ -258,13 +258,23 @@ export async function createHarvestApiScraper({
             await Promise.all(postPushPromises);
           } else {
             const error = typeof response.error === 'object' ? response.error : response;
+            let errStatus: number | undefined = response.status;
+
             if (typeof error === 'object') {
               delete error.user;
               delete error.credits;
+              if (error.status) errStatus = error.status;
             }
             console.error(
               `Error scraping item#${state.scrapedItemsCount + 1} ${entityKey}: ${JSON.stringify(error, null, 2)}`,
             );
+            if (Array.isArray(error)) {
+              errStatus = error.find((err) => err.status)?.status;
+            }
+            if (errStatus === 429) {
+              hasCharged = false;
+              break;
+            }
           }
 
           if (postsOnPageCounter === 0) {
