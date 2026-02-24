@@ -157,6 +157,7 @@ export async function createHarvestApiScraper({
                 'x-apify-user-id': userId!,
                 'x-apify-user-is-paying': String(isPaying),
                 'x-apify-user-is-paying-2': process.env.APIFY_USER_IS_PAYING || '',
+                'x-apify-is-pay-per-event': String(pricingInfo.isPayPerEvent),
               },
             },
           )
