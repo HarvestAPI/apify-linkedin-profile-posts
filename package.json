@@ -8,10 +8,9 @@
   },
   "dependencies": {
     "@harvestapi/scraper": "1.5.16",
-    "apify": "^3.2.6",
-    "apify-client": "^2.12.3",
-    "date-fns": "^4.1.0",
-    "dotenv": "^16.5.0"
+    "apify": "3.6.0",
+    "date-fns": "4.1.0",
+    "dotenv": "16.5.0"
   },
   "devDependencies": {
     "@apify/eslint-config-ts": "^0.3.0",
