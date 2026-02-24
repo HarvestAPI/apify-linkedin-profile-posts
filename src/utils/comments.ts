@@ -1,4 +1,4 @@
-import { Actor } from 'apify';
+import { Actor, ActorPricingInfo } from 'apify';
 import { Input, ScraperState } from '../main.js';
 import { createLinkedinScraper } from '@harvestapi/scraper';
 import { User } from 'apify-client';
@@ -13,12 +13,14 @@ export async function scrapeCommentsForPost({
   input,
   concurrency,
   user,
+  pricingInfo,
 }: {
   input: Input;
   post: { id: string; linkedinUrl: string };
   state: ScraperState;
   concurrency: number;
   user: User | null;
+  pricingInfo: ActorPricingInfo;
 }): Promise<{
   comments: any[];
 }> {
@@ -90,11 +92,23 @@ export async function scrapeCommentsForPost({
       console.info(`Scraped comment ${itemsCounter} for post ${post.id}`);
 
       comments.push(item);
-      await Actor.pushData({
-        type: 'comment',
-        ...(item as any),
-        query,
-      });
+
+      if (pricingInfo.isPayPerEvent) {
+        await Actor.pushData(
+          {
+            type: 'comment',
+            ...(item as any),
+            query,
+          },
+          'comment',
+        );
+      } else {
+        await Actor.pushData({
+          type: 'comment',
+          ...(item as any),
+          query,
+        });
+      }
     },
     overrideConcurrency: concurrency,
     maxItems: maxComments,

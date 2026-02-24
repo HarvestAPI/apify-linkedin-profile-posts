@@ -1,4 +1,4 @@
-import { Actor } from 'apify';
+import { Actor, ActorPricingInfo } from 'apify';
 import { config } from 'dotenv';
 import { Input, ScraperState } from '../main.js';
 import { scrapeCommentsForPost } from './comments.js';
@@ -12,11 +12,23 @@ config();
 const { actorId, actorRunId, actorBuildId, userId, actorMaxPaidDatasetItems, memoryMbytes } =
   Actor.getEnv();
 
-const pushPostData = createConcurrentQueues(100, async (item: Record<string, any>) => {
-  await Actor.pushData({
-    ...item,
-  });
-});
+const pushPostData = createConcurrentQueues(
+  100,
+  async ({ item, pricingInfo }: { item: Record<string, any>; pricingInfo: ActorPricingInfo }) => {
+    if (pricingInfo.isPayPerEvent) {
+      await Actor.pushData(
+        {
+          ...item,
+        },
+        'post',
+      );
+    } else {
+      await Actor.pushData({
+        ...item,
+      });
+    }
+  },
+);
 
 export async function createHarvestApiScraper({
   concurrency,
@@ -33,6 +45,8 @@ export async function createHarvestApiScraper({
   const scrapedPostsPerProfile: Record<string, Record<string, boolean>> = {};
   const client = Actor.newClient();
   const user = userId ? await client.user(userId).get() : null;
+  const cm = Actor.getChargingManager();
+  const pricingInfo = cm.getPricingInfo();
 
   let maxDate: Date | null = null;
   if (input.postedLimit === '1h') {
@@ -217,6 +231,7 @@ export async function createHarvestApiScraper({
                         input,
                         concurrency: reactionsConcurrency,
                         user,
+                      pricingInfo,
                       }).catch((error) => {
                         console.error(`Error scraping reactions for post ${post.id}:`, error);
                         return { reactions: [] };
@@ -230,6 +245,7 @@ export async function createHarvestApiScraper({
                       input,
                       concurrency: reactionsConcurrency,
                       user,
+                      pricingInfo,
                     }).catch((error) => {
                       console.error(`Error scraping comments for post ${post.id}:`, error);
                       return { comments: [] };
@@ -245,11 +261,14 @@ export async function createHarvestApiScraper({
 
                 postPushPromises.push(
                   pushPostData({
-                    type: 'post',
-                    ...post,
-                    reactions,
-                    comments,
-                    query,
+                    item: {
+                      type: 'post',
+                      ...post,
+                      reactions,
+                      comments,
+                      query,
+                    },
+                    pricingInfo,
                   }),
                 );
               }

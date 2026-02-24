@@ -1,5 +1,5 @@
 import { createLinkedinScraper } from '@harvestapi/scraper';
-import { Actor } from 'apify';
+import { Actor, ActorPricingInfo } from 'apify';
 import { User } from 'apify-client';
 import { Input, ScraperState } from '../main.js';
 
@@ -12,12 +12,14 @@ export async function scrapeReactionsForPost({
   input,
   concurrency,
   user,
+  pricingInfo,
 }: {
   input: Input;
   post: { id: string; linkedinUrl: string };
   state: ScraperState;
   concurrency: number;
   user: User | null;
+  pricingInfo: ActorPricingInfo;
 }): Promise<{
   reactions: any[];
 }> {
@@ -63,11 +65,23 @@ export async function scrapeReactionsForPost({
       console.info(`Scraped reaction ${postReactionsCounter} for post ${post.id}`);
 
       reactions.push(item);
-      await Actor.pushData({
-        type: 'reaction',
-        ...item,
-        query,
-      });
+
+      if (pricingInfo.isPayPerEvent) {
+        await Actor.pushData(
+          {
+            type: 'reaction',
+            ...item,
+            query,
+          },
+          'reaction',
+        );
+      } else {
+        await Actor.pushData({
+          type: 'reaction',
+          ...item,
+          query,
+        });
+      }
     },
     overrideConcurrency: concurrency,
     maxItems: maxReactions,
