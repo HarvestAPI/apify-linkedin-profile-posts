@@ -121,7 +121,7 @@ await state.datasetLastPushPromise;
 const hasCharged = results?.some((result) => result?.hasCharged) || false;
 const postsCounter = results?.reduce((acc, result) => acc + (result?.postsCounter || 0), 0) || 0;
 
-if (!postsCounter && hasCharged) {
+if (!postsCounter && hasCharged && !Object.keys(scraper.chargedPerEmptyBatch).length) {
   if (pricingInfo.isPayPerEvent) {
     await Actor.charge({ eventName: 'no-result' });
   } else {
