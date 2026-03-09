@@ -70,8 +70,6 @@ const authorsCompanies = [
 const targets = [...(input.targetUrls || []).map((url) => ({ targetUrl: url }))];
 
 const { actorMaxPaidDatasetItems } = Actor.getEnv();
-const cm = Actor.getChargingManager();
-const pricingInfo = cm.getPricingInfo();
 
 export type ScraperState = {
   itemsLeft: number;
@@ -112,24 +110,11 @@ const promises = [
   }),
 ];
 
-const results = await Promise.all(promises).catch((error) => {
+await Promise.all(promises).catch((error) => {
   console.error(`Error scraping profiles:`, error);
 });
 
 await state.datasetLastPushPromise;
-
-const hasCharged = results?.some((result) => result?.hasCharged) || false;
-const postsCounter = results?.reduce((acc, result) => acc + (result?.postsCounter || 0), 0) || 0;
-
-if (!postsCounter && hasCharged && !Object.keys(scraper.chargedPerEmptyBatch).length) {
-  if (pricingInfo.isPayPerEvent) {
-    await Actor.charge({ eventName: 'no-result' });
-  } else {
-    await Actor.pushData({
-      message: 'No posts found',
-    });
-  }
-}
 
 await new Promise((resolve) => setTimeout(resolve, 1000));
 

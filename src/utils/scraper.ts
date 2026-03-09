@@ -64,9 +64,6 @@ export async function createHarvestApiScraper({
     maxDate = subMonths(new Date(), 12);
   }
 
-  let emptyQueryCounter = 0;
-  const chargedPerEmptyBatch: Record<string, boolean> = {};
-
   return {
     addJob: createConcurrentQueues(
       concurrency,
@@ -316,25 +313,11 @@ export async function createHarvestApiScraper({
         );
 
         if (hasCharged && postsCounter === 0) {
-          emptyQueryCounter++;
-        }
-
-        const emptyQueryBatch = Math.floor(emptyQueryCounter / 50);
-        if (emptyQueryBatch && !chargedPerEmptyBatch[String(emptyQueryBatch)]) {
-          chargedPerEmptyBatch[String(emptyQueryBatch)] = true;
-
-          if (pricingInfo.isPayPerEvent) {
-            await Actor.charge({ eventName: 'no-result' });
-          } else {
-            await Actor.pushData({
-              message: 'No posts found',
-            });
-          }
+          await Actor.charge({ eventName: 'no-result' });
         }
 
         return { hasCharged, postsCounter };
       },
     ),
-    chargedPerEmptyBatch,
   };
 }
