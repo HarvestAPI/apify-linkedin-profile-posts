@@ -29,6 +29,12 @@
       "description": "Maximum number of posts to scrape per each profile or company. Default is 10. This overrides pagination. If you set this to 0, it will scrape all posts.",
       "prefill": 5
     },
+    "postedLimitDate": {
+      "title": "Posted Limit Date",
+      "type": "string",
+      "description": "Scrape posts up to and including this date. Format: YYYY-MM-DD.",
+      "editor": "datepicker"
+    },
     "includeQuotePosts": {
       "title": "Include Quote Posts (shared posts with comments)",
       "type": "boolean",

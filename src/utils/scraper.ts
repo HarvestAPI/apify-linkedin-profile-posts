@@ -48,8 +48,9 @@ export async function createHarvestApiScraper({
   const isPaying = !!process.env.APIFY_USER_IS_PAYING;
 
   let maxDate: Date | null = null;
+
   if (input.postedLimit === '1h') {
-    maxDate = new Date(Date.now() - 1 * 60 * 60 * 1000);
+    maxDate = new Date(Date.now() - 60 * 60 * 1000);
   } else if (input.postedLimit === '24h') {
     maxDate = new Date(Date.now() - 24 * 60 * 60 * 1000);
   } else if (input.postedLimit === 'week') {
@@ -62,6 +63,19 @@ export async function createHarvestApiScraper({
     maxDate = subMonths(new Date(), 6);
   } else if (input.postedLimit === 'year') {
     maxDate = subMonths(new Date(), 12);
+  }
+
+  if (input.postedLimitDate) {
+    const scrapeUntilDate = new Date(input.postedLimitDate);
+    if (!isNaN(scrapeUntilDate.getTime())) {
+      if (maxDate) {
+        if (scrapeUntilDate.getTime() > maxDate.getTime()) {
+          maxDate = scrapeUntilDate;
+        }
+      } else {
+        maxDate = scrapeUntilDate;
+      }
+    }
   }
 
   return {

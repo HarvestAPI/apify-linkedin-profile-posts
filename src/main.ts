@@ -18,6 +18,7 @@ export interface Input {
   page?: string;
   scrapePages?: string;
   maxPosts: number | string;
+  postedLimitDate?: string;
   targetUrls?: string[];
   profileUrls?: string[];
   profilePublicIdentifiers?: string[];
